@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace TheKiwiCoder
 {
-    public class Wait : ActionNode
+    public class TurnDuration : ActionNode
     {
         public float duration = 1;
         float startTime;
 
         protected override void OnStart()
         {
+            duration = blackboard.inGameContext.inGameSetting.turnDuration;
             startTime = Time.time;
         }
 
@@ -20,7 +21,12 @@ namespace TheKiwiCoder
 
         protected override State OnUpdate()
         {
-            if (Time.time - startTime > duration)
+            bool isEndTurn = false;
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                isEndTurn = true;
+            }
+            if (Time.time - startTime > duration || isEndTurn)
             {
                 return State.Success;
             }

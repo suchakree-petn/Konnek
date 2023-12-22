@@ -1,0 +1,582 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7334303575226035675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27bd6a22cb76a1a4eb2f868d62e93e24, type: 3}
+  m_Name: InitGameContext
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 2f9a2e258a6d9ec4baa9fdfca3cb2b8e
+  position: {x: -701.6, y: 550.39996}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+--- !u!114 &-5561327461150191897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b020a242d58b3e144be7795de6694628, type: 3}
+  m_Name: PlayerTurn_2
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 08e62729161579640b295e8c29ffecfc
+  position: {x: 301.6001, y: 550.39996}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  playerContext:
+    playerName: 
+--- !u!114 &-5509843173325470395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab24f29e81d2202458eaaf0ed72944b5, type: 3}
+  m_Name: EndTurn_1
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 19e89d67d55c8d34387c69fa00223d67
+  position: {x: -149.59985, y: 550.4}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+--- !u!114 &-4118999014411442580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9e411f4095d0a44acd9a25323f5e73, type: 3}
+  m_Name: Log
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 692c5e33a958d8d4a83692dca431b74f
+  position: {x: 602.40015, y: 627.2}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  message: End turn 2
+--- !u!114 &-4098210015017681547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a650a70fa9f614a84d32860a55f661, type: 3}
+  m_Name: EndTurnDuration
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 649dfb0f4c7d41c48aac9a29322f94e2
+  position: {x: 752.8002, y: 550.39996}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  duration: 1
+--- !u!114 &-4024397365336487874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9e411f4095d0a44acd9a25323f5e73, type: 3}
+  m_Name: Log
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: e817ae8346842834ba91e1252c4227a6
+  position: {x: 301.59998, y: 628.00006}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  message: Start turn 2
+--- !u!114 &-1651118050045621629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d99b2b2fda439894484edb0fb6fe976e, type: 3}
+  m_Name: TurnDuration
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 91e1350b2d10eff4e949ae9fcc6a5218
+  position: {x: 452.00015, y: 550.39996}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  duration: 1
+--- !u!114 &-1348206326876609474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9e411f4095d0a44acd9a25323f5e73, type: 3}
+  m_Name: Log
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: ec56b4d5854fc5549b1e9bb04ada735f
+  position: {x: -701.6, y: 627.99994}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  message: Init !
+--- !u!114 &-772644313845477959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9e411f4095d0a44acd9a25323f5e73, type: 3}
+  m_Name: Log
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: e17e7dad09725254bb7fe859f75ed201
+  position: {x: -149.59985, y: 627.2}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  message: End turn 1
+--- !u!114 &-255200636225624323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9e411f4095d0a44acd9a25323f5e73, type: 3}
+  m_Name: Log
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 7cca43f4b90573d47a6b941167bf031b
+  position: {x: -450.39996, y: 627.2}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  message: Start turn 1
+--- !u!114 &-231644147365997958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61431bba79d7d7843b82bf1de71703f5, type: 3}
+  m_Name: Sequencer
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: af1c3243d0fd37b499e08ec641170529
+  position: {x: 151.20012, y: 307.74197}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  children:
+  - {fileID: -7334303575226035675}
+  - {fileID: -255200636225624323}
+  - {fileID: 7884105764860372788}
+  - {fileID: 7433664572803401092}
+  - {fileID: -5509843173325470395}
+  - {fileID: -772644313845477959}
+  - {fileID: 5569302977457176901}
+  - {fileID: -4024397365336487874}
+  - {fileID: -5561327461150191897}
+  - {fileID: -1651118050045621629}
+  - {fileID: -4118999014411442580}
+  - {fileID: 2605954994818543838}
+  - {fileID: -4098210015017681547}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d285eb63c2cdd74180de7cfceaa96ad, type: 3}
+  m_Name: In-Game State
+  m_EditorClassIdentifier: 
+  rootNode: {fileID: 5730250002448664298}
+  treeState: 0
+  nodes:
+  - {fileID: 5730250002448664298}
+  - {fileID: -231644147365997958}
+  - {fileID: 4646685891739063740}
+  - {fileID: 7884105764860372788}
+  - {fileID: -7334303575226035675}
+  - {fileID: 7211658367079623303}
+  - {fileID: -1348206326876609474}
+  - {fileID: -5561327461150191897}
+  - {fileID: 7433664572803401092}
+  - {fileID: 5569302977457176901}
+  - {fileID: -1651118050045621629}
+  - {fileID: -4098210015017681547}
+  - {fileID: 2605954994818543838}
+  - {fileID: -5509843173325470395}
+  - {fileID: -4118999014411442580}
+  - {fileID: -772644313845477959}
+  - {fileID: -255200636225624323}
+  - {fileID: -4024397365336487874}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+--- !u!114 &2605954994818543838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acfcb0ec97b72db49ac9844ac3fe55fa, type: 3}
+  m_Name: EndTurn_2
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: e2d800d10d40a434eb9ec8efda6238bd
+  position: {x: 602.40015, y: 550.39996}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+--- !u!114 &4646685891739063740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb5496e8cd973748a10b3e3ef436ebd, type: 3}
+  m_Name: Repeat
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 37d7a026d1381ce4188df588cecdd77b
+  position: {x: 151.20016, y: 142.19922}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  child: {fileID: -231644147365997958}
+  restartOnSuccess: 1
+  restartOnFailure: 1
+--- !u!114 &5569302977457176901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a650a70fa9f614a84d32860a55f661, type: 3}
+  m_Name: EndTurnDuration
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: f2e8e0be44747f54eb6b16672e6581cf
+  position: {x: 0.80013657, y: 550.4}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  duration: 1
+--- !u!114 &5730250002448664298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163c147d123e4a945b688eddc64e3ea5, type: 3}
+  m_Name: RootNode
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: dba028ee1ad31bb4f8e853c63b0f769a
+  position: {x: 168.09995, y: -484.23105}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  child: {fileID: 7211658367079623303}
+--- !u!114 &7211658367079623303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61431bba79d7d7843b82bf1de71703f5, type: 3}
+  m_Name: Sequencer
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 791185d85ebfbb4429763f6fc1ad55d2
+  position: {x: 152.00012, y: -20.672379}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  children:
+  - {fileID: 4646685891739063740}
+--- !u!114 &7433664572803401092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d99b2b2fda439894484edb0fb6fe976e, type: 3}
+  m_Name: TurnDuration
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 4e7f27be0f5addd4aa3be533e63505d3
+  position: {x: -299.99985, y: 550.39996}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  duration: 1
+--- !u!114 &7884105764860372788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12f740aad6c4194478b27bd9bb5c99a9, type: 3}
+  m_Name: PlayerTurn_1
+  m_EditorClassIdentifier: 
+  state: 0
+  started: 0
+  guid: 02929edd3198a3342b752b8eac34eb21
+  position: {x: -450.39987, y: 550.39996}
+  blackboard:
+    moveToPosition: {x: 0, y: 0, z: 0}
+    inGameContext:
+      inGameSetting: {fileID: 0}
+      playerContext_1:
+        playerName: 
+      playerContext_2:
+        playerName: 
+      currentPlayer:
+        playerName: 
+  description: 
+  drawGizmos: 0
+  playerContext:
+    playerName: 
