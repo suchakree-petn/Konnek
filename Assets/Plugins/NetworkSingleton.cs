@@ -1,5 +1,4 @@
 using Unity.Netcode;
-using UnityEngine;
 
 public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkBehaviour
 {
@@ -28,6 +27,7 @@ public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkBe
         instance = GetComponent<T>();
         if (CarryToOtherScene)
         {
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject.transform.root.gameObject);
         }
         InitAfterAwake();
