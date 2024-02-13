@@ -22,10 +22,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
 --- !u!114 &-5561327461150191897
@@ -50,14 +54,20 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   playerContext:
     playerName: 
+    playerOrderIndex: 0
+    isPlayerEndTurn: 0
 --- !u!114 &-5509843173325470395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80,10 +90,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
 --- !u!114 &-4118999014411442580
@@ -108,10 +122,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   message: End turn 2
@@ -137,10 +155,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   duration: 1
@@ -166,10 +188,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   message: Start turn 2
@@ -195,10 +221,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   duration: 1
@@ -224,10 +254,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   message: Init !
@@ -253,10 +287,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   message: End turn 1
@@ -282,10 +320,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   message: Start turn 1
@@ -311,10 +353,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   children:
@@ -370,10 +416,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
 --- !u!114 &2605954994818543838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,10 +446,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
 --- !u!114 &4646685891739063740
@@ -424,10 +478,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   child: {fileID: -231644147365997958}
@@ -455,10 +513,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   duration: 1
@@ -484,10 +546,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   child: {fileID: 7211658367079623303}
@@ -513,10 +579,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   children:
@@ -543,10 +613,14 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   duration: 1
@@ -572,11 +646,17 @@ MonoBehaviour:
       inGameSetting: {fileID: 0}
       playerContext_1:
         playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
       playerContext_2:
         playerName: 
-      currentPlayer:
-        playerName: 
+        playerOrderIndex: 0
+        isPlayerEndTurn: 0
+      currentState: 0
+      playedPositions: []
   description: 
   drawGizmos: 0
   playerContext:
     playerName: 
+    playerOrderIndex: 0
+    isPlayerEndTurn: 0

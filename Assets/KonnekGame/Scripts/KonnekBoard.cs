@@ -1,16 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-[System.Serializable]
-public class KonnekBoard
+public struct PlayedPosition : INetworkSerializable, IEquatable<PlayedPosition>
 {
-    public List<Vector3> board;
-    public Dictionary<int, int> columnAmount;
+    public Vector3 Value;
 
-    public KonnekBoard()
+    public PlayedPosition(Vector3 value)
     {
-        board = new(42);
-        columnAmount = new Dictionary<int, int>();
+        Value = value;
+    }
+    public bool Equals(PlayedPosition other)
+    {
+        return Value == other.Value;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref Value);
     }
 }
+

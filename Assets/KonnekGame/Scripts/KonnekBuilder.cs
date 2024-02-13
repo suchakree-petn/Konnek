@@ -1,15 +1,21 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using DG.Tweening;
 using Unity.Netcode;
 using UnityEngine;
 
 public class KonnekBuilder : NetworkBehaviour
 {
-    private KonnekManager konnekManager => KonnekManager.Instance;
+    private KonnekManager KonnekManager => KonnekManager.Instance;
+
+    [Header("Animation Config")]
+    [SerializeField] private float dropDuration;
+    [SerializeField] private AnimationCurve dropCurve;
+    public static Action OnCompleteDropAnimation;
+
     [Header("Reference")]
-    [SerializeField] private GameObject piece_prf;
-    [SerializeField] private Transform board_parent;
+    [SerializeField] private Transform piece_prf;
+    private Transform board_parent;
 
     private void Awake()
     {
@@ -18,12 +24,20 @@ public class KonnekBuilder : NetworkBehaviour
             board_parent = GameObject.FindWithTag("Board").transform;
         }
     }
-    public void BuildBoard(InGameContext context)
+    public override void OnNetworkSpawn()
     {
-        List<Vector3> positions = context.playedPositions;
-        Vector3 lastPosition = positions[^1];
-        GameObject piece = Instantiate(piece_prf, board_parent);
-        piece.transform.localPosition = new Vector3(lastPosition.x, lastPosition.y, 0);
+        if (!IsServer)
+        {
+            return;
+        }
+        KonnekManager.OnPlayPieceSuccess += (context) => BuildBoardClientRpc(KonnekManager.konnekBoard[^1]);
+    }
+    [ClientRpc]
+    public void BuildBoardClientRpc(Vector3 lastPosition)
+    {
+        Transform piece = Instantiate(piece_prf,board_parent);
+        piece.gameObject.SetActive(false);
+        piece.localPosition = new Vector3(lastPosition.x, 7, 0);
         if (lastPosition.z == 1)
         {
             piece.GetComponent<SpriteRenderer>().color = Color.red;
@@ -31,17 +45,21 @@ public class KonnekBuilder : NetworkBehaviour
         else if (lastPosition.z == 2)
         {
             piece.GetComponent<SpriteRenderer>().color = Color.blue;
-        }else{
+        }
+        else
+        {
             Debug.LogError("Player Index Error");
         }
+        piece.gameObject.SetActive(true);
+        piece.DOLocalMoveY(lastPosition.y, dropDuration).SetEase(dropCurve)
+        .OnComplete(() =>
+        {
+            if (!IsServer) return;
+            OnCompleteDropAnimation?.Invoke();
+        });
     }
 
-    private void OnEnable()
-    {
-        KonnekManager.OnPlaySuccess += BuildBoard;
-    }
     private void OnDisable()
     {
-        KonnekManager.OnPlaySuccess -= BuildBoard;
     }
 }

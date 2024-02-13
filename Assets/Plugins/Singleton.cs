@@ -28,6 +28,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         instance = GetComponent<T>();
         if (CarryToOtherScene)
         {
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject.transform.root.gameObject);
         }
         InitAfterAwake();
