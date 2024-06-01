@@ -1,4 +1,3 @@
-using Unity.Netcode;
 using UnityEngine;
 
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
@@ -24,13 +23,13 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             DestroyImmediate(gameObject);
             return;
         }
-
-        instance = GetComponent<T>();
         if (CarryToOtherScene)
         {
             transform.SetParent(null);
-            DontDestroyOnLoad(gameObject.transform.root.gameObject);
+            DontDestroyOnLoad(transform.root);
         }
+
+        instance = GetComponent<T>();
         InitAfterAwake();
     }
 
