@@ -4,62 +4,70 @@ using UnityEngine;
 public partial class MainGameManager : NetworkSingleton<MainGameManager>
 {
     [Header("Game Context")]
-    public MainGameContext mainGameContext;
-    public CommandQueue commandQueue;
+    public MainGameContext MainGameContext;
+    public CommandQueue CommandQueue;
     MainGameSetting mainGameSetting;
+    public NetworkVariable<ulong> CurrentClientTurn = new();
 
     protected override void InitAfterAwake()
     {
     }
 
+    private void Start()
+    {
+        // NetworkManager.StartHost();
+        StartGame();
 
+    }
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
         mainGameSetting = Resources.Load<MainGameSetting>("Game Setting/Main Game Setting/SO/Main Game Setting");
-        mainGameContext = new(PlayerManager.Instance.playerData_1, PlayerManager.Instance.playerData_2, mainGameSetting);
-        commandQueue = new();
+        MainGameContext = new(PlayerManager.Instance.PlayerData_1, PlayerManager.Instance.PlayerData_2, mainGameSetting);
+        CommandQueue = new();
 
-        OnGameStart += (ref MainGameContext context) =>
+        OnGameStart += (MainGameContext context) =>
         {
             KonnekManager.OnPlayPieceFailed += (ctx) => Debug.Log("Cant play this column"); ;
-            mainGameContext.currentState = MainGameState.Player_1_Start_Turn;
+            MainGameContext.currentState = MainGameState.Player_1_Start_Turn;
         };
 
-        OnStartTurn_Player_1 += (ref MainGameContext context) =>
+        OnStartTurn_Player_1 += (MainGameContext context) =>
         {
             SetCurrentPlayerContextClientRpc(1);
-            context.GetCurrentPlayerContext().isPlayerTurn = true;
-            UpdateCurrentPlayerClientRpc("Name");
+            MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
+            UpdateCurrentPlayerClientRpc(context.PlayerContextByPlayerOrder[1].PlayerData.PlayerName.ToString());
+            CurrentClientTurn.Value = context.PlayerContextByPlayerOrder[1].GetClientId();
         };
 
-        OnStartTurn_Player_2 += (ref MainGameContext context) =>
+        OnStartTurn_Player_2 += (MainGameContext context) =>
         {
             SetCurrentPlayerContextClientRpc(2);
-            context.GetCurrentPlayerContext().isPlayerTurn = true;
-            UpdateCurrentPlayerClientRpc("Name");
+            MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
+            UpdateCurrentPlayerClientRpc(context.PlayerContextByPlayerOrder[2].PlayerData.PlayerName.ToString());
+            CurrentClientTurn.Value = context.PlayerContextByPlayerOrder[2].GetClientId();
         };
 
-        OnDuringTurn_Player_1 += (ref MainGameContext context) =>
+        OnDuringTurn_Player_1 += (MainGameContext context) =>
         {
-            DuringTurnTimer(mainGameContext);
+            DuringTurnTimer(MainGameContext);
             UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
         };
 
-        OnDuringTurn_Player_2 += (ref MainGameContext context) =>
+        OnDuringTurn_Player_2 += (MainGameContext context) =>
         {
-            DuringTurnTimer(mainGameContext);
+            DuringTurnTimer(MainGameContext);
             UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
         };
 
-        OnEndTurn_Player_1 += (ref MainGameContext context) =>
+        OnEndTurn_Player_1 += (MainGameContext context) =>
         {
-            context.GetCurrentPlayerContext().isPlayerTurn = false;
+            MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = false;
         };
 
-        OnEndTurn_Player_2 += (ref MainGameContext context) =>
+        OnEndTurn_Player_2 += (MainGameContext context) =>
         {
-            context.GetCurrentPlayerContext().isPlayerTurn = false;
+            MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = false;
         };
 
     }
@@ -80,18 +88,18 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
         {
             Debug.Log("No On complete");
         }
-        commandQueue.AddCommand(command);
+        CommandQueue.AddCommand(command);
     }
 
     public void StartGame()
     {
-        OnGameStart?.Invoke(ref mainGameContext);
+        OnGameStart?.Invoke(MainGameContext);
     }
 
     [ClientRpc]
     private void SetCurrentPlayerContextClientRpc(int playerIndex)
     {
-        mainGameContext.SetCurrentPlayerContext(playerIndex);
+        MainGameContext.SetCurrentPlayerContext(playerIndex);
     }
 
 }

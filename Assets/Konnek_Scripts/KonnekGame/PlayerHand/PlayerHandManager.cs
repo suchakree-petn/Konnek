@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class PlayerHand : Singleton<PlayerHand>
+public partial class PlayerHandManager : Singleton<PlayerHandManager>
 {
-    public static Action<CardHolder> OnPointerEnterTriggered;
-    public static Action<CardHolder> OnPointerExitTriggered;
-    public static Action<CardHolder> OnDrag;
+    public Action<CardHolder> OnPointerEnterTriggered;
+    public Action<CardHolder> OnPointerExitTriggered;
+    public Action<CardHolder> OnDrag;
 
     public List<GameObject> cards = new();
+
+    public CardHolder CurrentHoldingCard;
+
+    [SerializeField] private GameObject playerHandTransform;
 
     protected override void InitAfterAwake()
     {
@@ -16,16 +20,16 @@ public partial class PlayerHand : Singleton<PlayerHand>
 
     public GameObject GetCardByIndex(int index)
     {
-        if (index > transform.childCount || index < 1) return null;
-        return transform.GetChild(index).gameObject;
+        if (index > playerHandTransform.transform.childCount || index < 1) return null;
+        return playerHandTransform.transform.GetChild(index).gameObject;
     }
     public GameObject GetLastCard()
     {
-        if (transform.childCount == 0)
+        if (playerHandTransform.transform.childCount == 0)
         {
-            return gameObject;
+            return playerHandTransform;
         }
-        Transform lastCard = transform.GetChild(transform.childCount - 1);
+        Transform lastCard = playerHandTransform.transform.GetChild(playerHandTransform.transform.childCount - 1);
         return lastCard.gameObject;
     }
     public static void SetCardAsChild(Transform card)
@@ -35,7 +39,7 @@ public partial class PlayerHand : Singleton<PlayerHand>
             Debug.LogWarning("Only card can be set here");
             return;
         }
-        card.SetParent(Instance.transform);
+        card.SetParent(Instance.playerHandTransform.transform);
     }
     private void OnEnable()
     {

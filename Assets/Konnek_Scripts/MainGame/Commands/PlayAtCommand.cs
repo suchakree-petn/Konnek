@@ -17,7 +17,7 @@ public class PlayAtCommand : Command
         konnekManager.columnAmount.TryGetValue(column, out int amount);
         if (amount >= 6)
         {
-            KonnekManager.OnPlayPieceFailed?.Invoke(MainGameManager.Instance.mainGameContext);
+            KonnekManager.OnPlayPieceFailed?.Invoke(MainGameManager.Instance.MainGameContext);
             base.Execute();
             return;
         }
@@ -25,7 +25,7 @@ public class PlayAtCommand : Command
         Vector3 playedPosition = new(column, amount, playerIndex);
         konnekManager.konnekBoard.Add(playedPosition);
         konnekManager.columnAmount[column] = amount;
-        KonnekManager.OnPlayPieceSuccess?.Invoke(MainGameManager.Instance.mainGameContext);
+        KonnekManager.OnPlayPieceSuccess?.Invoke(MainGameManager.Instance.MainGameContext);
         KonnekBuilder.OnCompleteDropAnimation += base.Execute;
     }
 

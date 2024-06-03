@@ -8,7 +8,7 @@ public abstract class Card : ScriptableObject
     public Action OnFinishPlayCard;
     
     [Header("Info")]
-    public string cardId;
+    public ulong cardId;
     public string cardName;
     [TextArea(1, 30)]
     public string cardDescription;
@@ -17,8 +17,8 @@ public abstract class Card : ScriptableObject
     [Header("Reference")]
     public Transform card_prf;
 
-    static Dictionary<string, Card> _cache;
-    public static Dictionary<string, Card> Cache
+    static Dictionary<ulong, Card> _cache;
+    public static Dictionary<ulong, Card> Cache
     {
         get
         {

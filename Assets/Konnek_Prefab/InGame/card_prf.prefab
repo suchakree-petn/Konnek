@@ -473,7 +473,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Card: {fileID: 0}
-  cardState: 0
+  CardState: 0
   cardName: {fileID: 3728901453961735167}
   cardDescription: {fileID: 578863329209938191}
   IsPopUp: 0

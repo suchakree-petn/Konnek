@@ -6,25 +6,25 @@ using UnityEngine;
 [Serializable]
 public class Deck
 {
-    [SerializeField] private List<string> cardList = new();
+    [SerializeField] private List<ulong> cardList = new();
 
-    public string GetCardByIndex(int index)
+    public ulong GetCardByIndex(int index)
     {
         if (cardList.Count == 0)
         {
-            return null;
+            return 0;
         }
-        string card = cardList.ElementAt(index);
+        ulong card = cardList.ElementAt(index);
         cardList.Remove(card);
         return card;
     }
-    public string GetCardFromTopDeck()
+    public ulong GetCardFromTopDeck()
     {
         if (cardList.Count == 0)
         {
-            return null;
+            return 0;
         }
-        string card = cardList[^1];
+        ulong card = cardList[^1];
         cardList.Remove(card);
         return card;
     }

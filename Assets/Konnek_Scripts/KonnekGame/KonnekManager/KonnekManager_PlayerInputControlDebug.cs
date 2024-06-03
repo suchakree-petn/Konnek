@@ -11,7 +11,7 @@ public partial class KonnekManager
     {
         ulong clientId = serverRpcParams.Receive.SenderClientId;
         Debug.Log($"Try set to {column}");
-        if (MainGameManager.Instance.mainGameContext.IsOwnerTurn(clientId))
+        if (MainGameManager.Instance.MainGameContext.IsOwnerTurn(clientId))
         {
             SelectedColumn = column;
         }

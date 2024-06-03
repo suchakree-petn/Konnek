@@ -8,9 +8,9 @@ public class PlayOnClick : MonoBehaviour
     private void OnMouseDown()
     {
         Command playCommand = new PlayAtCommand((int)transform.localPosition.x,
-            MainGameManager.Instance.mainGameContext.GetCurrentPlayerContext().playerOrderIndex);
+            MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().PlayerOrderIndex);
         playCommand.OnComplete(TestCallback);
-        MainGameManager.Instance.commandQueue.AddCommand(playCommand);
+        MainGameManager.Instance.CommandQueue.AddCommand(playCommand);
     }
     private void TestCallback(){
             Debug.Log("Finish play at animation");

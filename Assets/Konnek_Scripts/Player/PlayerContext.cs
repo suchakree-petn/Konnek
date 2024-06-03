@@ -1,27 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Netcode;
-using Unity.Networking.Transport;
-using UnityEngine;
 
 [System.Serializable]
 public class PlayerContext
 {
-    public PlayerData playerData;
-    public int playerOrderIndex;
-    public bool isPlayerTurn;
-    public int drawCardQuota;
+    public PlayerData PlayerData;
+    public int PlayerOrderIndex;
+    public bool IsPlayerTurn;
+    public int DrawCardQuota;
 
     public PlayerContext(PlayerData playerData, int playerOrderIndex)
     {
-        this.playerData = playerData;
-        this.playerOrderIndex = playerOrderIndex;
-        isPlayerTurn = playerOrderIndex == 1;
+        PlayerData = playerData;
+        PlayerOrderIndex = playerOrderIndex;
+        IsPlayerTurn = playerOrderIndex == 1;
     }
 
-    public ulong GetPlayerId()
+    public ulong GetClientId()
     {
-        return 999;
+        return PlayerData.ClientId;
     }
 }

@@ -53,7 +53,10 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
     {
         playerActions = new();
         playerActions.InGame.Enable();
-        konnekBoard = new NetworkList<Vector3>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        konnekBoard = new NetworkList<Vector3>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        konnekBoard.OnListChanged += KonnekManager_OnKonnekBoardListChanged;
+        OnKonnekBoardListChanged += UpdateLocalKonnekBoard;
 
     }
 
@@ -66,25 +69,27 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         if (!IsServer) return;
         CreateNewBoard();
         OnPlayPieceSuccess += CheckKonnek;
-        konnekBoard.OnListChanged += KonnekManager_OnKonnekBoardListChanged;
-        OnKonnekBoardListChanged += UpdateLocalKonnekBoardClientRpc;
     }
 
     private void KonnekManager_OnKonnekBoardListChanged(NetworkListEvent<Vector3> changeEvent)
     {
         OnKonnekBoardListChanged?.Invoke();
     }
-    [ServerRpc(RequireOwnership =false)]
-    public void PlayCardServerRpc(string cardId)
+    [ServerRpc(RequireOwnership = false)]
+    public void PlayCardServerRpc(ulong cardId)
     {
         Card card = Card.Cache[cardId];
         MainGameManager.Instance.AddCommand(new PlayCardCommand(card));
-        OnPlayCardSuccess?.Invoke(MainGameManager.Instance.mainGameContext);
+        OnPlayCardSuccess?.Invoke(MainGameManager.Instance.MainGameContext);
     }
 
-    [ClientRpc]
-    private void UpdateLocalKonnekBoardClientRpc()
+    private void UpdateLocalKonnekBoard()
     {
+        localKonnekBoard.Clear();
+        foreach (Vector3 positon in konnekBoard)
+        {
+            localKonnekBoard.Add(positon);
+        }
         // switch (changeEvent.Type)
         // {
         //     case NetworkListEvent<Vector3>.EventType.Add:
@@ -115,14 +120,8 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         //     default:
         //         break;
         // }
-        localKonnekBoard.Clear();
-        foreach (Vector3 positon in konnekBoard)
-        {
-            localKonnekBoard.Add(positon);
-        }
+
     }
-
-
 
     public void CreateNewBoard()
     {
@@ -142,11 +141,11 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
     private void PlayAtServerRpc(int column, ServerRpcParams rpcParams = default)
     {
         ulong clientId = rpcParams.Receive.SenderClientId;
-        if (!MainGameManager.Instance.mainGameContext.IsOwnerTurn(clientId)) return;
+        if (!MainGameManager.Instance.MainGameContext.IsOwnerTurn(clientId)) return;
 
         Command playCommand = new PlayAtCommand(column,
-            MainGameManager.Instance.mainGameContext.GetCurrentPlayerContext().playerOrderIndex);
-        MainGameManager.Instance.commandQueue.AddCommand(playCommand);
+            MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().PlayerOrderIndex);
+        MainGameManager.Instance.CommandQueue.AddCommand(playCommand);
     }
 
 

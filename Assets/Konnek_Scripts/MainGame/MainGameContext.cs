@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,19 +9,36 @@ public class MainGameContext
     [SerializeField] private PlayerContext playerContext_1;
     [SerializeField] private PlayerContext playerContext_2;
     [SerializeField] private PlayerContext currentPlayer;
-    // private Dictionary<ulong, PlayerContext> playerContext;
-    // public Dictionary<ulong, PlayerContext> PlayerContext
-    // {
-    //     get{
-    //         if(playerContext ==null){
-    //     playerContext = new();
-    //     playerContext.Add()
-    //         }
-    //     }
-    // }
+    public Dictionary<ulong, PlayerContext> PlayerContextByClientId
+    {
+        get
+        {
+            Dictionary<ulong, PlayerContext> result = new()
+            {
+                {playerContext_1.GetClientId(),playerContext_1},
+                {playerContext_2.GetClientId(),playerContext_2}
+            }; 
+            return result;
+        }
+    }
+
+    public Dictionary<int, PlayerContext> PlayerContextByPlayerOrder
+    {
+        get
+        {
+            Dictionary<int, PlayerContext> result  = new()
+            {
+                {playerContext_1.PlayerOrderIndex,playerContext_1},
+                {playerContext_2.PlayerOrderIndex,playerContext_2}
+            }; 
+            return result;
+        }
+    }
+
     public MainGameState currentState;
     public float TurnDuration => mainGameSetting.turnDuration;
     public float currentTurnDuration;
+
 
     public MainGameContext(PlayerData player1, PlayerData player2, MainGameSetting mainGameSetting)
     {
@@ -45,7 +61,7 @@ public class MainGameContext
     }
     public PlayerContext GetPlayerContextByPlayerId(ulong playerId)
     {
-        if (playerId == playerContext_1.GetPlayerId())
+        if (playerId == playerContext_1.GetClientId())
         {
             return playerContext_1;
         }
@@ -61,7 +77,7 @@ public class MainGameContext
     }
     public PlayerContext GetCurrentPlayerContext()
     {
-        if (currentPlayer.playerOrderIndex == 1)
+        if (currentPlayer.PlayerOrderIndex == 1)
         {
             return playerContext_1;
         }
@@ -69,7 +85,7 @@ public class MainGameContext
     }
     public PlayerContext GetOtherPlayerContext()
     {
-        if (currentPlayer.playerOrderIndex == 2)
+        if (currentPlayer.PlayerOrderIndex == 2)
         {
             return playerContext_1;
         }
@@ -86,39 +102,27 @@ public class MainGameContext
     }
     public bool IsOwnerTurn(ulong clientId)
     {
-        return currentPlayer.playerOrderIndex - 1 == (int)clientId;
-    }
-    public int GetPlayerIndexByPlayerId(ulong playerId)
-    {
-        if (playerId == playerContext_1.GetPlayerId())
-        {
-            return playerContext_1.playerOrderIndex;
-        }
-        else if (playerId == playerContext_2.GetPlayerId())
-        {
-            return playerContext_2.playerOrderIndex;
-        }
-        return -999;
+        return MainGameManager.Instance.CurrentClientTurn.Value == clientId;
     }
     public int GetPlayerIndexByClientId(ulong clientId)
     {
-        if ((int)clientId == playerContext_1.playerOrderIndex - 1)
+        if ((int)clientId == playerContext_1.PlayerOrderIndex - 1)
         {
-            return playerContext_1.playerOrderIndex;
+            return playerContext_1.PlayerOrderIndex;
         }
-        else if ((int)clientId == playerContext_2.playerOrderIndex - 1)
+        else if ((int)clientId == playerContext_2.PlayerOrderIndex - 1)
         {
-            return playerContext_2.playerOrderIndex;
+            return playerContext_2.PlayerOrderIndex;
         }
         return -999;
     }
     public bool CanDraw(ulong clientId)
     {
-        if (IsOwnerTurn(clientId) && GetOwnerPlayerContext().drawCardQuota > 0)
+        if (IsOwnerTurn(clientId) && GetCurrentPlayerContext().DrawCardQuota > 0)
         {
             return true;
         }
-        Debug.Log($"Cant draw\nIs owner turn: {IsOwnerTurn(clientId)}\nDraw card quota: {GetOwnerPlayerContext().drawCardQuota}");
+        Debug.Log($"Cant draw\nIs owner turn: {IsOwnerTurn(clientId)}\nDraw card quota: {GetCurrentPlayerContext().DrawCardQuota}");
         return false;
     }
 

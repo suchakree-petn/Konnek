@@ -6,12 +6,10 @@ using UnityEngine;
 
 public partial class PlayerManager : NetworkSingleton<PlayerManager>
 {
-    public PlayerData playerData_1;
-    public PlayerData playerData_2;
-    public PlayerData LocalPlayerData => new() { PlayerName = MainMenuManager.Instance.NameInputField.text };
+    public PlayerData PlayerData_1 => KonnekMultiplayerManager.Instance.playerDataNetworkList[0];
+    public PlayerData PlayerData_2 => KonnekMultiplayerManager.Instance.playerDataNetworkList[1];
     public string LocalPlayerName => MainMenuManager.Instance.NameInputField.text;
 
-    public Action<ulong> OnClientConnect;
     protected override void InitAfterAwake()
     {
 

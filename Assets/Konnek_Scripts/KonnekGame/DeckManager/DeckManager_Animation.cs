@@ -18,14 +18,14 @@ public partial class DeckManager
 
         Vector3 spawnPos = deckAnimationConfig.GetDeckTransformByIndex(deckIndex).position;
         card.position = spawnPos;
-        GameObject lastCardInHand = PlayerHand.Instance.GetLastCard();
+        GameObject lastCardInHand = PlayerHandManager.Instance.GetLastCard();
         Vector3 lastCardPosition;
         lastCardPosition = lastCardInHand.transform.position;
         card.DOMove(lastCardPosition, deckAnimationConfig.moveToHandDuration)
         .OnComplete(() =>
         {
             image.raycastTarget = true;
-            PlayerHand.SetCardAsChild(card);
+            PlayerHandManager.SetCardAsChild(card);
         })
         .SetEase(deckAnimationConfig.moveToHandCurve);
     }

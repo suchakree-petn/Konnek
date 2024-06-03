@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Main Game Setting
   m_EditorClassIdentifier: 
   turnDuration: 180
-  endTurnDuration: 3
+  endTurnDuration: 1

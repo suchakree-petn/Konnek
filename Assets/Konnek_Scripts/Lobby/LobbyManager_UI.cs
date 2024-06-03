@@ -35,20 +35,10 @@ namespace Konnek.KonnekLobby
         {
             UpdatePlayerJoined();
             if (!IsServer) return;
-            NetworkManager.SceneManager.OnLoadComplete += LobbyManager_OnLoadComplete;
-
             NetworkManager.OnClientConnectedCallback += LobbyManager_UI_OnClientConnected_ClientRpc;
 
         }
 
-        private void LobbyManager_OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
-        {
-            if (Loader.TargetScene != Loader.Scene.LobbyScene)
-            {
-                NetworkManager.SceneManager.OnLoadComplete -= LobbyManager_OnLoadComplete;
-                Destroy(gameObject);
-            }
-        }
 
         public override void OnNetworkDespawn()
         {
@@ -76,7 +66,7 @@ namespace Konnek.KonnekLobby
         {
             Loader.LoadingScene();
         }
-        
+
         private bool IsAllPlayerReady()
         {
             int playerReadyCount = 0;
@@ -89,7 +79,7 @@ namespace Konnek.KonnekLobby
                 }
             }
 
-            if (playerReadyCount == joinedPlayerLobby.Count)
+            if (playerReadyCount == LobbyManager.MAX_PLAYER)
             {
                 return true;
             }

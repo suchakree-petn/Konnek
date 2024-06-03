@@ -5,44 +5,53 @@ using UnityEngine;
 public partial class DeckManager : NetworkSingleton<DeckManager>
 {
     public Action OnDrawCard;
-    public Dictionary<ulong, Deck> decks = new();
+    public Dictionary<ulong, Deck> DeckDict = new();
     public List<Deck> Decks = new();
 
-    public void InitDecks()
+    public void InitDecks(MainGameContext mainGameContext)
     {
-        // decks[PlayerManager.GetPlayerId(1)] = Decks[0];
-        // decks[PlayerManager.GetPlayerId(2)] = Decks[1];
+        DeckDict[mainGameContext.PlayerContextByPlayerOrder[1].GetClientId()] = Decks[0];
+        DeckDict[mainGameContext.PlayerContextByPlayerOrder[2].GetClientId()] = Decks[1];
     }
 
-    private Transform SpawnCard(string cardId, CardState cardState = CardState.Default)
+    private Transform SpawnCard(ulong cardId, CardState cardState = CardState.Default)
     {
-        if (cardId is null)
-        {
-            Debug.Log("Card is null");
-            return null;
-        }
+        // if (cardId is null)
+        // {
+        //     Debug.Log("Card is null");
+        //     return null;
+        // }
         Card card = Card.Cache[cardId];
         Transform card_GO = Instantiate(card.card_prf, deckAnimationConfig.deckTransform_1.parent);
         CardHolder cardHolder = card_GO.GetComponent<CardHolder>();
         cardHolder.InitCardData(card);
-        cardHolder.cardState = cardState;
+        cardHolder.CardState = cardState;
         return card_GO;
     }
     protected override void InitAfterAwake()
     {
-        InitDecks();
+    }
+    public override void OnNetworkSpawn()
+    {
+        if(!IsServer) return;
+        MainGameManager.Instance.OnGameStart += InitDecks;
     }
 
+    public override void OnNetworkDespawn()
+    {
+        if(!IsServer) return;
+        MainGameManager.Instance.OnGameStart -= InitDecks;
+    }
     private void OnEnable()
     {
         DeckManagerPointerEventHandler.OnDeckClick += () => DrawCardFromTopDeckServerRpc();
-        MainGameManager.OnStartTurn_Player_1 += (ref MainGameContext context) =>
+        MainGameManager.Instance.OnStartTurn_Player_1 += (MainGameContext context) =>
         {
-            context.GetCurrentPlayerContext().drawCardQuota = 1;
+            MainGameManager.Instance.MainGameContext.PlayerContextByPlayerOrder[1].DrawCardQuota = 1;
         };
-        MainGameManager.OnStartTurn_Player_2 += (ref MainGameContext context) =>
+        MainGameManager.Instance.OnStartTurn_Player_2 += (MainGameContext context) =>
         {
-            context.GetCurrentPlayerContext().drawCardQuota = 1;
+            MainGameManager.Instance.MainGameContext.PlayerContextByPlayerOrder[2].DrawCardQuota = 1;
         };
     }
 }

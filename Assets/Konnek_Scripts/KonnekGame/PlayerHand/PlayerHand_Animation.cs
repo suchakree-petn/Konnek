@@ -2,11 +2,11 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 
-public partial class PlayerHand
+public partial class PlayerHandManager
 {
     [Header("Animation Config")]
     [SerializeField] private BumpAnimationConfig bumpAnimationConfig;
-    [SerializeField] private PopAnimationConfig popAnimationConfig;
+    public PopAnimationConfig PopAnimationConfig;
 
 
 
@@ -24,26 +24,26 @@ public partial class PlayerHand
         // .SetEase(bumpCurve);
     }
 
-    private void PopUpCardWhileInHandAnimation(CardHolder cardHolder)
+    public void PopUpCardWhileInHandAnimation(CardHolder cardHolder)
     {
-        if (cardHolder.cardState != CardState.InHand || cardHolder.IsPopUp) return;
+        if (cardHolder.CardState != CardState.InHand || cardHolder.IsPopUp) return;
         cardHolder.IsPopUp = true;
         Transform cardHolderTransform = cardHolder.transform.GetChild(0);
         DOTween.Kill(cardHolderTransform);
-        cardHolderTransform.localPosition += new Vector3(0, popAnimationConfig.popUpOffset_Y, 0);
-        cardHolderTransform.DOScale(popAnimationConfig.popUpScale * 1, popAnimationConfig.popUpDuration)
-        .SetEase(popAnimationConfig.popCurve);
+        cardHolderTransform.localPosition += new Vector3(0, PopAnimationConfig.popUpOffset_Y, 0);
+        cardHolderTransform.DOScale(PopAnimationConfig.popUpScale * 1, PopAnimationConfig.popUpDuration)
+        .SetEase(PopAnimationConfig.popCurve);
 
     }
-    private void PopDownCardWhileInHandAnimation(CardHolder cardHolder)
+    public void PopDownCardWhileInHandAnimation(CardHolder cardHolder)
     {
-        if (cardHolder.cardState != CardState.InHand || !cardHolder.IsPopUp) return;
+        if (cardHolder.CardState != CardState.InHand || !cardHolder.IsPopUp) return;
         cardHolder.IsPopUp = false;
         Transform cardHolderTransform = cardHolder.transform.GetChild(0);
         DOTween.Kill(cardHolderTransform);
-        cardHolderTransform.localPosition -= new Vector3(0, popAnimationConfig.popUpOffset_Y, 0);
-        cardHolderTransform.DOScale(1, popAnimationConfig.popDownDuration)
-        .SetEase(popAnimationConfig.popCurve);
+        cardHolderTransform.localPosition -= new Vector3(0, PopAnimationConfig.popUpOffset_Y, 0);
+        cardHolderTransform.DOScale(1, PopAnimationConfig.popDownDuration)
+        .SetEase(PopAnimationConfig.popCurve);
 
     }
 

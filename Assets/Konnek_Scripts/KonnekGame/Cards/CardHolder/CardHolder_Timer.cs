@@ -28,7 +28,7 @@ public partial class CardHolder
     private IEnumerator Timer()
     {
         yield return new WaitForSeconds(pointerEnterTriggerDuration);
-        PlayerHand.OnPointerEnterTriggered?.Invoke(this);
+        PlayerHandManager.Instance.OnPointerEnterTriggered?.Invoke(this);
         StopTimer();
     }
 }
