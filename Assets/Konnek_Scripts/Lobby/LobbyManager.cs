@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Unity.Collections;
+using Konnek.MainMenu;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -43,12 +43,11 @@ namespace Konnek.KonnekLobby
         {
             public List<Lobby> lobbyList;
         }
-        public Action OnPlayerReady;
 
         private Lobby joinedLobby;
         private List<string> joinedPlayerId = new();
-        public NetworkList<PlayerLobby> joinedPlayerLobby = new();
-        public Dictionary<ulong, PlayerLobby> JoinedPlayerLobby
+        public NetworkList<PlayerLobby> joinedPlayerLobby;
+        public Dictionary<ulong, PlayerLobby> JoinedPlayerLobbyDict
         {
             get
             {
@@ -61,13 +60,25 @@ namespace Konnek.KonnekLobby
                 return temp;
             }
         }
+        public Action OnPlayerLobbyListChanged;
+
+        [SerializeField] private string FailedJoinText;
+        [SerializeField] private string FailedQuickJoinText;
+        [SerializeField] private string FailedCreateLobbyText;
 
         protected override void InitAfterAwake()
         {
             InitializeUnityAuthentication();
-            joinedPlayerLobby = new NetworkList<PlayerLobby>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+            joinedPlayerLobby = new NetworkList<PlayerLobby>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+            joinedPlayerLobby.OnListChanged += HandleOnPlayerLobbyListChanged;
 
+            OnCreateLobbyStarted += HandleOnCreateLobbyStart;
+            OnCreateLobbyFailed += HandleOnCreateLobbyFailed;
 
+            OnJoinStarted += HandleOnJoinStart;
+            OnJoinFailed += HandleOnJoinFailed;
+
+            OnQuickJoinFailed += HandleOnQuickJoinFailed;
 
         }
 
@@ -87,10 +98,59 @@ namespace Konnek.KonnekLobby
         public override void OnNetworkSpawn()
         {
             if (!IsServer) return;
-            NetworkManager.OnClientConnectedCallback += HandleOnPlayerJoinedLobby;
-
+            NetworkManager.OnClientConnectedCallback += HandleOnClientConnected;
+            NetworkManager.OnClientDisconnectCallback += HandleOnClientDisconnect;
 
         }
+
+        private void HandleOnClientDisconnect(ulong clientId)
+        {
+            HandleOnClientDisconnect(clientId);
+        }
+
+        private void HandleOnClientConnected(ulong clientId)
+        {
+            OnPlayerJoinedLobby(clientId);
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (!IsServer) return;
+        }
+
+
+        private void HandleOnQuickJoinFailed(object sender, EventArgs e)
+        {
+            Loader.UnLoadLoadingScene();
+            MainMenuManager.Instance.ShowFailedConnectionUI(FailedQuickJoinText);
+        }
+
+        private void HandleOnJoinFailed(object sender, EventArgs e)
+        {
+            Loader.UnLoadLoadingScene();
+            MainMenuManager.Instance.ShowFailedConnectionUI(FailedJoinText);
+        }
+
+        private void HandleOnJoinStart(object sender, EventArgs e)
+        {
+            Loader.LoadingScene();
+        }
+
+        private void HandleOnCreateLobbyFailed(object sender, EventArgs e)
+        {
+            Loader.UnLoadLoadingScene();
+            MainMenuManager.Instance.ShowFailedConnectionUI(FailedCreateLobbyText);
+        }
+
+        private void HandleOnCreateLobbyStart(object sender, EventArgs e)
+        {
+        }
+
+        private void HandleOnPlayerLobbyListChanged(NetworkListEvent<PlayerLobby> changeEvent)
+        {
+            OnPlayerLobbyListChanged?.Invoke();
+        }
+
         private async void InitializeUnityAuthentication()
         {
             if (UnityServices.State != ServicesInitializationState.Initialized)
@@ -109,6 +169,11 @@ namespace Konnek.KonnekLobby
             OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
             try
             {
+                OnJoinStarted?.Invoke(this, EventArgs.Empty);
+
+                Allocation allocation = await AllocateRelay();
+                string relayJoinCode = await GetRelayJoinCode(allocation);
+
                 var options = new CreateLobbyOptions
                 {
                     IsPrivate = isPrivate,
@@ -122,6 +187,7 @@ namespace Konnek.KonnekLobby
                     Data = new Dictionary<string, DataObject>
                     {
                         {KEY_STAGE_ID,new DataObject(DataObject.VisibilityOptions.Public,"Test Stage")},
+                        {KEY_RELAY_JOIN_CODE,new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode)}
                     }
 
                 };
@@ -129,7 +195,6 @@ namespace Konnek.KonnekLobby
 
                 joinedLobby = lobby;
 
-                OnJoinStarted?.Invoke(this, EventArgs.Empty);
                 Debug.Log("PlayerCount: " + joinedLobby.Players.Count);
 
                 Debug.Log("Stage ID: " + joinedLobby.Data[KEY_STAGE_ID].Value);
@@ -138,19 +203,13 @@ namespace Konnek.KonnekLobby
                 {
                     Debug.Log("Player name: " + player.Data[KEY_PLAYER_NAME].Value);
                 }
-                Loader.LoadingScene();
-
-                Allocation allocation = await AllocateRelay();
-                string relayJoinCode = await GetRelayJoinCode(allocation);
-
-                await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions()
-                {
-                    Data = new Dictionary<string, DataObject>{
-                    {KEY_RELAY_JOIN_CODE,new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode)}
-                }
-                });
+                // await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions()
+                // {
+                //     Data = new Dictionary<string, DataObject>
+                //     {
+                //     }
+                // });
                 NetworkManager.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
-                Debug.Log("Create lobby code: " + joinedLobby.LobbyCode);
                 KonnekMultiplayerManager.Instance.StartHost();
 
                 NetworkManager.SceneManager.OnLoadComplete += LobbyManager_OnNetworkManagerOnLoadCompleted;
@@ -160,6 +219,7 @@ namespace Konnek.KonnekLobby
             catch (LobbyServiceException e)
             {
                 Debug.LogWarning(e);
+                OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
             }
 
         }
@@ -219,7 +279,7 @@ namespace Konnek.KonnekLobby
                     heartbeatTimer = heartbeatTimerMax;
 
 
-                    Debug.Log("Heartbeat");
+                    Debug.Log(" ");
                     await LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
                 }
             }
@@ -251,7 +311,7 @@ namespace Konnek.KonnekLobby
                 refreshTimer -= Time.deltaTime;
                 if (refreshTimer < 0f)
                 {
-                    float refreshTimerMax = 1.1f;
+                    float refreshTimerMax = 2f;
                     refreshTimer = refreshTimerMax;
                     Lobby lobby = null;
                     try
@@ -302,6 +362,8 @@ namespace Konnek.KonnekLobby
         {
             try
             {
+                OnJoinStarted?.Invoke(this, EventArgs.Empty);
+
                 joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync(new()
                 {
                     Player = new Player
@@ -312,9 +374,13 @@ namespace Konnek.KonnekLobby
                     }
                     }
                 });
+                if (!joinedLobby.Data.ContainsKey(KEY_RELAY_JOIN_CODE))
+                {
+                    Debug.LogWarning("Not contains KEY_RELAY_JOIN_CODE");
+                    // OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
+                    return;
+                }
                 string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
-                Debug.Log("Lobby Id: " + joinedLobby.Data[KEY_STAGE_ID].Value);
-                Debug.Log("QJ code: " + relayJoinCode);
                 JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
                 NetworkManager.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
@@ -324,6 +390,7 @@ namespace Konnek.KonnekLobby
             catch (LobbyServiceException e)
             {
                 Debug.LogWarning(e);
+                OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
             }
         }
         public async void JoinWithId(string lobbyId)
@@ -499,7 +566,7 @@ namespace Konnek.KonnekLobby
             if (joinedLobby == null &&
                 UnityServices.State == ServicesInitializationState.Initialized &&
                 AuthenticationService.Instance.IsSignedIn &&
-                SceneManager.GetActiveScene().name == "Thanva_MainMenu_UserDataPersistence")
+                Loader.TargetScene == Loader.Scene.LobbyScene)
             {
 
                 listLobbiesTimer -= Time.deltaTime;
@@ -511,7 +578,7 @@ namespace Konnek.KonnekLobby
                 }
             }
         }
-        public void HandleOnPlayerJoinedLobby(ulong clientId)
+        public void OnPlayerJoinedLobby(ulong clientId)
         {
             Debug.Log("Joined client: " + clientId);
             Lobby lobby = GetLobby();
@@ -533,27 +600,37 @@ namespace Konnek.KonnekLobby
                 joinedPlayerId.Add(player.Id);
             }
         }
+        public void OnPlayerLeaveLobby(ulong clientId)
+        {
+            Debug.Log($"Client {clientId} leave lobby ");
+            Lobby lobby = GetLobby();
+
+            foreach (Player player in lobby.Players)
+            {
+                if (joinedPlayerId.Contains(player.Id))
+                {
+                    Debug.Log("Remove player id: " + player.Id);
+                    joinedPlayerLobby.Remove(
+                            new PlayerLobby()
+                            {
+                                ClientId = clientId,
+                                PlayerName = player.Data[KEY_PLAYER_NAME].Value,
+                                IsReady = false
+                            });
+                    joinedPlayerId.Remove(player.Id);
+                }
+            }
+        }
         public string GetKEY_PLAYER_NAME()
         {
             return KEY_PLAYER_NAME;
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void SetPlayerReady_ServerRpc(ServerRpcParams serverRpcParams = default)
+        public void SetPlayerLobby_ServerRpc(int index, PlayerLobby playerLobby)
         {
-            ulong clientId = serverRpcParams.Receive.SenderClientId;
-            for (int i = 0; i < joinedPlayerLobby.Count; i++)
-            {
-                if (joinedPlayerLobby[i].ClientId == clientId)
-                {
-                    PlayerLobby playerLobby = joinedPlayerLobby[i];
-                    playerLobby.IsReady = !playerLobby.IsReady;
-                    joinedPlayerLobby[i] = playerLobby;
-                    OnPlayerReady?.Invoke();
-                    break;
-                }
-            }
-
+            Debug.Log("Set player lobby: " + playerLobby.PlayerName + " to " + playerLobby.IsReady);
+            joinedPlayerLobby[index] = playerLobby;
         }
         // private void OnJoinedPlayerLobbyChanged(NetworkListEvent<PlayerLobby> changeEvent)
         // {
@@ -562,26 +639,6 @@ namespace Konnek.KonnekLobby
         //         HandleOnPlayerJoinedLobby(changeEvent.Value.ClientId);
         //     }
         // }
-    }
-    public struct PlayerLobby : INetworkSerializable, IEquatable<PlayerLobby>
-    {
-        public ulong ClientId;
-        public FixedString32Bytes PlayerName;
-        public bool IsReady;
-
-        public bool Equals(PlayerLobby other)
-        {
-            return other.ClientId == ClientId
-            && other.PlayerName == PlayerName
-            && other.IsReady == IsReady;
-        }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref ClientId);
-            serializer.SerializeValue(ref PlayerName);
-            serializer.SerializeValue(ref IsReady);
-        }
     }
 }
 

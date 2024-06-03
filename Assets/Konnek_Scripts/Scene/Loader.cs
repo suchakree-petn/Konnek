@@ -51,6 +51,10 @@ public static class Loader
     {
         SceneManager.LoadScene(TransScene(Scene.LoadingScene.ToString()), LoadSceneMode.Additive);
     }
+    public static void UnLoadLoadingScene()
+    {
+        SceneManager.UnloadSceneAsync(TransScene(Scene.LoadingScene.ToString()));
+    }
 
     public static void LoaderCallback()
     {

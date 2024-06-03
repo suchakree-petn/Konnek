@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using TMPro;
-using Unity.Collections;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 namespace Konnek.KonnekLobby
 {
@@ -25,7 +22,8 @@ namespace Konnek.KonnekLobby
         protected override void InitAfterAwake()
         {
 
-            readyButton.onClick.AddListener(() => LobbyManager.Instance.SetPlayerReady_ServerRpc());
+            readyButton.onClick.AddListener(() => SetPlayerReady(NetworkManager.LocalClientId));
+            LobbyManager.Instance.OnPlayerLobbyListChanged += UpdatePlayerJoined;
         }
 
         private void Start()
@@ -35,12 +33,12 @@ namespace Konnek.KonnekLobby
 
         public override void OnNetworkSpawn()
         {
+            UpdatePlayerJoined();
             if (!IsServer) return;
-            LobbyManager.Instance.OnPlayerReady += UpdatePlayerJoined_ClientRpc;
             NetworkManager.SceneManager.OnLoadComplete += LobbyManager_OnLoadComplete;
 
-            UpdatePlayerJoined_ClientRpc();
-            NetworkManager.OnClientConnectedCallback += LobbyManager_UI_OnClientConnected;
+            NetworkManager.OnClientConnectedCallback += LobbyManager_UI_OnClientConnected_ClientRpc;
+
         }
 
         private void LobbyManager_OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
@@ -55,22 +53,65 @@ namespace Konnek.KonnekLobby
         public override void OnNetworkDespawn()
         {
             if (!IsServer) return;
-            LobbyManager.Instance.OnPlayerReady -= UpdatePlayerJoined_ClientRpc;
-            NetworkManager.OnClientConnectedCallback -= LobbyManager_UI_OnClientConnected;
+            NetworkManager.OnClientConnectedCallback -= LobbyManager_UI_OnClientConnected_ClientRpc;
 
         }
 
-        [ClientRpc]
-        public void UpdatePlayerJoined_ClientRpc()
-        {
 
+
+        [ServerRpc(RequireOwnership = false)]
+        public void UpdatePlayerJoined_ServerRpc(ulong clientId)
+        {
+            UpdatePlayerJoined_ClientRpc();
+
+            if (IsAllPlayerReady())
+            {
+                LoadingSceneTransition_ClientRpc();
+                Loader.LoadNetwork(Loader.Scene.GameScene);
+            }
+        }
+
+        [ClientRpc]
+        private void LoadingSceneTransition_ClientRpc()
+        {
+            Loader.LoadingScene();
+        }
+        
+        private bool IsAllPlayerReady()
+        {
+            int playerReadyCount = 0;
+            NetworkList<PlayerLobby> joinedPlayerLobby = LobbyManager.Instance.joinedPlayerLobby;
+            foreach (PlayerLobby playerLobby in joinedPlayerLobby)
+            {
+                if (playerLobby.IsReady)
+                {
+                    playerReadyCount++;
+                }
+            }
+
+            if (playerReadyCount == joinedPlayerLobby.Count)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        [ClientRpc]
+        private void UpdatePlayerJoined_ClientRpc()
+        {
+            UpdatePlayerJoined();
+        }
+        public void UpdatePlayerJoined()
+        {
+            Debug.Log("Update lobby UI");
             foreach (Transform child in parent)
             {
                 Destroy(child.gameObject);
             }
-            List<Player> joinedPlayer = LobbyManager.Instance.GetLobby().Players;
             foreach (PlayerLobby player in LobbyManager.Instance.joinedPlayerLobby)
             {
+                Debug.Log($"{player.PlayerName} : {player.IsReady}");
+
                 Transform playerLobby = Instantiate(playerLobby_prf, parent);
                 TextMeshProUGUI playerName = playerLobby.GetComponent<TextMeshProUGUI>();
                 playerName.text = player.PlayerName.ToString();
@@ -88,18 +129,34 @@ namespace Konnek.KonnekLobby
                 }
             }
 
-
         }
 
-        private void LobbyManager_UI_OnClientConnected(ulong clientId){
-            UpdatePlayerJoined_ClientRpc();
+        [ClientRpc]
+        private void LobbyManager_UI_OnClientConnected_ClientRpc(ulong clientId)
+        {
+            UpdatePlayerJoined();
         }
 
         private void SetLobbyCodeUI(string code)
         {
             lobbyCode.text = "Code: " + code;
         }
-
+        public void SetPlayerReady(ulong clientId)
+        {
+            NetworkList<PlayerLobby> joinedPlayerLobby = LobbyManager.Instance.joinedPlayerLobby;
+            for (int i = 0; i < joinedPlayerLobby.Count; i++)
+            {
+                if (joinedPlayerLobby[i].ClientId == clientId)
+                {
+                    Debug.Log($"client {clientId} write on client {joinedPlayerLobby[i].ClientId}");
+                    PlayerLobby playerLobby = joinedPlayerLobby[i];
+                    playerLobby.IsReady = !playerLobby.IsReady;
+                    LobbyManager.Instance.SetPlayerLobby_ServerRpc(i, playerLobby);
+                    break;
+                }
+            }
+            UpdatePlayerJoined_ServerRpc(clientId);
+        }
 
     }
     [Serializable]

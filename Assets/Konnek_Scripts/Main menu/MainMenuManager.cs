@@ -15,6 +15,8 @@ namespace Konnek.MainMenu
         [SerializeField] private Button startClient;
         [SerializeField] private TMP_InputField lobbyName;
         [SerializeField] private Toggle isPrivateToggle;
+        [SerializeField] private GameObject failedConnectionUI;
+        [SerializeField] private TextMeshProUGUI failedConnectionTextUI;
         public TMP_InputField NameInputField;
 
 
@@ -37,7 +39,11 @@ namespace Konnek.MainMenu
             });
         }
 
-
+        public void ShowFailedConnectionUI(string failedConnectionText)
+        {
+            failedConnectionTextUI.text = failedConnectionText;
+            failedConnectionUI.SetActive(true);
+        }
     }
 }
 
