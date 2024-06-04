@@ -30,7 +30,7 @@ public class CommandQueue
             isExecuting = true;
             // Debug.Log($"Command queue size: {commandsQueue.Count}");
             Command command = commandsQueue.Dequeue();
-            if (commandsQueue.Count > 0 && MainGameManager.Instance.MainGameContext.currentState == MainGameState.Idle)
+            if (commandsQueue.Count > 0 && MainGameManager.Instance.MainGameContext.GetCurrentGameState() == MainGameState.Idle)
             {
                 command.OnComplete(TryExecuteCommandsServerRpc);
             }

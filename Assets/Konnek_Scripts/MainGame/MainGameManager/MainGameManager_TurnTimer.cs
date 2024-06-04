@@ -4,7 +4,9 @@ using UnityEngine;
 
 public partial class MainGameManager
 {
-    [Header("Turn-timer reference")]
+
+    [Header("Turn-timer")]
+    [SerializeField] private float timerInterval;
     [SerializeField] private TextMeshProUGUI duringTurnTimer;
 
     [ClientRpc]
@@ -20,7 +22,22 @@ public partial class MainGameManager
         }
         else
         {
-            Server_EndTurn(ref context);
+            KonnekManager.Instance.EndTurn_ServerRpc(context.GetCurrentPlayerContext().GetClientId());
         }
+    }
+
+    internal bool IsReadyToUpdateTimer()
+    {
+        bool isReady = false;
+        if (timerInterval < 1)
+        {
+            timerInterval += Time.deltaTime;
+        }
+        else
+        {
+            timerInterval = 0;
+            isReady = true;
+        }
+        return isReady;
     }
 }

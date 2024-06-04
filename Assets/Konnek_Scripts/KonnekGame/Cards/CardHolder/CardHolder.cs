@@ -12,6 +12,7 @@ public partial class CardHolder : MonoBehaviour
     [Header("Reference")]
     [SerializeField] private TextMeshProUGUI cardName;
     [SerializeField] private TextMeshProUGUI cardDescription;
+    [SerializeField] private Image cardImage;
 
 
     private void Awake()
@@ -58,6 +59,7 @@ public partial class CardHolder : MonoBehaviour
         Card = card;
         cardName.text = card.cardName;
         cardDescription.text = card.cardDescription;
+        cardImage.sprite = card.CardSprite;
     }
     private void OnValidate()
     {

@@ -9,13 +9,16 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
     MainGameSetting mainGameSetting;
     public NetworkVariable<ulong> CurrentClientTurn = new();
 
+    public bool IsTestOnePlayer;
+
     protected override void InitAfterAwake()
     {
     }
 
     private void Start()
     {
-        // NetworkManager.StartHost();
+        if (IsTestOnePlayer)
+            NetworkManager.StartHost();
         StartGame();
 
     }
@@ -29,7 +32,7 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
         OnGameStart += (MainGameContext context) =>
         {
             KonnekManager.OnPlayPieceFailed += (ctx) => Debug.Log("Cant play this column"); ;
-            MainGameContext.currentState = MainGameState.Player_1_Start_Turn;
+            MainGameContext.SetCurrentGameState(MainGameState.Player_1_Start_Turn);
         };
 
         OnStartTurn_Player_1 += (MainGameContext context) =>
@@ -38,6 +41,8 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
             MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
             UpdateCurrentPlayerClientRpc(context.PlayerContextByPlayerOrder[1].PlayerData.PlayerName.ToString());
             CurrentClientTurn.Value = context.PlayerContextByPlayerOrder[1].GetClientId();
+            KonnekManager.Instance.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
+            KonnekManager.Instance.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
         };
 
         OnStartTurn_Player_2 += (MainGameContext context) =>
@@ -46,18 +51,26 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
             MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
             UpdateCurrentPlayerClientRpc(context.PlayerContextByPlayerOrder[2].PlayerData.PlayerName.ToString());
             CurrentClientTurn.Value = context.PlayerContextByPlayerOrder[2].GetClientId();
+            KonnekManager.Instance.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
+            KonnekManager.Instance.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
         };
 
         OnDuringTurn_Player_1 += (MainGameContext context) =>
         {
+            if (IsReadyToUpdateTimer())
+            {
+                UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
+            }
             DuringTurnTimer(MainGameContext);
-            UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
         };
 
         OnDuringTurn_Player_2 += (MainGameContext context) =>
         {
+            if (IsReadyToUpdateTimer())
+            {
+                UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
+            }
             DuringTurnTimer(MainGameContext);
-            UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
         };
 
         OnEndTurn_Player_1 += (MainGameContext context) =>

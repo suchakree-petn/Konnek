@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public partial class KonnekManager : NetworkSingleton<KonnekManager>
 {
@@ -14,15 +15,15 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
     public Action OnKonnekBoardListChanged;
 
     [Header("Konnek Board")]
-    public NetworkList<Vector3> konnekBoard;
-    public Dictionary<int, int> columnAmount = new();
+    public NetworkList<Vector3> KonnekBoard;
+    public Dictionary<int, int> ColumnAmount = new();
     [SerializeField] private List<Vector3> localKonnekBoard = new();
-    public List<Vector3> playedPositions
+    public List<Vector3> PlayedPositions
     {
         get
         {
             List<Vector3> temp = new();
-            foreach (var item in konnekBoard)
+            foreach (var item in KonnekBoard)
             {
                 temp.Add(item);
             }
@@ -49,22 +50,31 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
             }
         }
     }
+
+    [SerializeField] private Button playPieceButton;
+    [SerializeField] private Button endTurnButton;
+
+
     protected override void InitAfterAwake()
     {
         playerActions = new();
         playerActions.InGame.Enable();
-        konnekBoard = new NetworkList<Vector3>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        KonnekBoard = new NetworkList<Vector3>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
-        konnekBoard.OnListChanged += KonnekManager_OnKonnekBoardListChanged;
+        KonnekBoard.OnListChanged += KonnekManager_OnKonnekBoardListChanged;
         OnKonnekBoardListChanged += UpdateLocalKonnekBoard;
 
+        playPieceButton.onClick.AddListener(() => PlayButton(NetworkManager.LocalClientId));
+        endTurnButton.onClick.AddListener(() => EndTurnButton(NetworkManager.LocalClientId));
     }
+
+
 
     public override void OnNetworkSpawn()
     {
         playerActions.InGame.SelectLeftColumn.performed += (ctx) => RequestMoveColumnServerRpc(SelectedColumn - 1);
         playerActions.InGame.SelectRightColumn.performed += (ctx) => RequestMoveColumnServerRpc(SelectedColumn + 1);
-        playerActions.InGame.PlayPiece.performed += (ctx) => PlayAtServerRpc(SelectedColumn);
+        // playerActions.InGame.PlayPiece.performed += (ctx) => PlayAtServerRpc(SelectedColumn);
 
         if (!IsServer) return;
         CreateNewBoard();
@@ -82,11 +92,113 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         MainGameManager.Instance.AddCommand(new PlayCardCommand(card));
         OnPlayCardSuccess?.Invoke(MainGameManager.Instance.MainGameContext);
     }
+    private void PlayButton(ulong clientId)
+    {
+        if (MainGameManager.Instance.MainGameContext.IsOwnerTurn(clientId))
+        {
+            PlayAtServerRpc(SelectedColumn,clientId);
+            SetPlayPieceButton_ServerRpc(false, clientId);
+        }
+    }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void SetPlayPieceButton_ServerRpc(bool isInteractable, ulong clientId)
+    {
+        SetPlayPieceButton_ClientRpc(isInteractable, clientId);
+    }
+
+    [ClientRpc]
+    public void SetPlayPieceButton_ClientRpc(bool isInteractable, ulong clientId)
+    {
+        if (clientId != NetworkManager.LocalClientId) return;
+        Debug.Log($"Client: {clientId} set to {isInteractable}");
+        SetPlayPieceButton(isInteractable);
+    }
+
+    public void SetPlayPieceButton(bool isInteractable)
+    {
+        playPieceButton.interactable = isInteractable;
+    }
+
+    public void EndTurnButton(ulong clientId)
+    {
+        MainGameContext mainGameContext = MainGameManager.Instance.MainGameContext;
+        if (mainGameContext.IsOwnerTurn(clientId))
+        {
+            EndTurn_ServerRpc(clientId);
+            SetEndTurnButton_ServerRpc(false, clientId);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void EndTurn_ServerRpc(ulong clientId)
+    {
+        MainGameContext mainGameContext = MainGameManager.Instance.MainGameContext;
+        if (!mainGameContext.PlayerContextByClientId[clientId].IsPlayedPiece)
+        {
+            PlayButton(clientId);
+        }
+        mainGameContext.PlayerContextByClientId[clientId].IsPlayedPiece = false;
+        if (MainGameManager.Instance.CommandQueue.commandsQueue.Count > 0)
+        {
+            MainGameManager.Instance.MainGameContext.SetCurrentGameState(MainGameState.Idle);
+            MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = false;
+        }
+        Command endTurnCommand = new EndTurnCommand();
+        MainGameManager.Instance.CommandQueue.AddCommand(endTurnCommand);
+        MainGameManager.Instance.CommandQueue.TryExecuteCommandsServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetEndTurnButton_ServerRpc(bool isInteractable, ulong clientId)
+    {
+        SetEndTurnButton_ClientRpc(isInteractable, clientId);
+    }
+
+    [ClientRpc]
+    public void SetEndTurnButton_ClientRpc(bool isInteractable, ulong clientId)
+    {
+        if (clientId != NetworkManager.LocalClientId) return;
+        SetEndTurnButton(isInteractable);
+    }
+
+    public void SetEndTurnButton(bool isInteractable)
+    {
+        endTurnButton.interactable = isInteractable;
+    }
+    public void CreateNewBoard()
+    {
+        InitColumnAmoutClientRpc();
+    }
+
+    [ClientRpc]
+    private void InitColumnAmoutClientRpc()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            ColumnAmount.Add(i + 1, 0);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void PlayAtServerRpc(int column, ulong clientId)
+    {
+        if (MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().IsPlayedPiece) return;
+
+        Command playCommand = new PlayAtCommand(column,
+            MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().PlayerOrderIndex);
+        MainGameManager.Instance.CommandQueue.AddCommand(playCommand);
+        MainGameManager.Instance.MainGameContext.PlayerContextByClientId[clientId].IsPlayedPiece = true;
+    }
+
+    public bool IsColumnFull(int columnIndex)
+    {
+        return ColumnAmount[columnIndex] >= 6;
+    }
     private void UpdateLocalKonnekBoard()
     {
         localKonnekBoard.Clear();
-        foreach (Vector3 positon in konnekBoard)
+        foreach (Vector3 positon in KonnekBoard)
         {
             localKonnekBoard.Add(positon);
         }
@@ -122,32 +234,6 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         // }
 
     }
-
-    public void CreateNewBoard()
-    {
-        InitColumnAmoutClientRpc();
-    }
-
-    [ClientRpc]
-    private void InitColumnAmoutClientRpc()
-    {
-        for (int i = 0; i < 7; i++)
-        {
-            columnAmount.Add(i + 1, 0);
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void PlayAtServerRpc(int column, ServerRpcParams rpcParams = default)
-    {
-        ulong clientId = rpcParams.Receive.SenderClientId;
-        if (!MainGameManager.Instance.MainGameContext.IsOwnerTurn(clientId)) return;
-
-        Command playCommand = new PlayAtCommand(column,
-            MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().PlayerOrderIndex);
-        MainGameManager.Instance.CommandQueue.AddCommand(playCommand);
-    }
-
 
 
 

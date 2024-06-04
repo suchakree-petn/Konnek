@@ -14,8 +14,8 @@ public class Deck
         {
             return 0;
         }
-        ulong card = cardList.ElementAt(index);
-        cardList.Remove(card);
+        ulong card = cardList[index];
+        cardList.RemoveAt(index);
         return card;
     }
     public ulong GetCardFromTopDeck()
@@ -25,7 +25,7 @@ public class Deck
             return 0;
         }
         ulong card = cardList[^1];
-        cardList.Remove(card);
+        cardList.RemoveAt(cardList.Count - 1);
         return card;
     }
 }

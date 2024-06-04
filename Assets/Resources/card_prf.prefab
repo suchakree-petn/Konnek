@@ -476,6 +476,7 @@ MonoBehaviour:
   CardState: 0
   cardName: {fileID: 3728901453961735167}
   cardDescription: {fileID: 578863329209938191}
+  cardImage: {fileID: 652094338431979034}
   IsPopUp: 0
   sheenAnim: {fileID: 5615039876169762952}
   reflectAnim: {fileID: 8627795031305007948}
@@ -511,8 +512,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
+  m_Type: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1052,7 +1053,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -817555197, guid: 9819b41d7ad6f4f43a6e9f8e4ed7eee1, type: 3}
+  m_Sprite: {fileID: 1579273067, guid: 9819b41d7ad6f4f43a6e9f8e4ed7eee1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

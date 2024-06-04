@@ -7,6 +7,7 @@ public partial class DeckManager : NetworkSingleton<DeckManager>
     public Action OnDrawCard;
     public Dictionary<ulong, Deck> DeckDict = new();
     public List<Deck> Decks = new();
+    [SerializeField] private Transform card_prf;
 
     public void InitDecks(MainGameContext mainGameContext)
     {
@@ -22,7 +23,7 @@ public partial class DeckManager : NetworkSingleton<DeckManager>
         //     return null;
         // }
         Card card = Card.Cache[cardId];
-        Transform card_GO = Instantiate(card.card_prf, deckAnimationConfig.deckTransform_1.parent);
+        Transform card_GO = Instantiate(card_prf, deckAnimationConfig.deckTransform_1.parent);
         CardHolder cardHolder = card_GO.GetComponent<CardHolder>();
         cardHolder.InitCardData(card);
         cardHolder.CardState = cardState;

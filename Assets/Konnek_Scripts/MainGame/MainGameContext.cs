@@ -17,7 +17,7 @@ public class MainGameContext
             {
                 {playerContext_1.GetClientId(),playerContext_1},
                 {playerContext_2.GetClientId(),playerContext_2}
-            }; 
+            };
             return result;
         }
     }
@@ -26,16 +26,16 @@ public class MainGameContext
     {
         get
         {
-            Dictionary<int, PlayerContext> result  = new()
+            Dictionary<int, PlayerContext> result = new()
             {
                 {playerContext_1.PlayerOrderIndex,playerContext_1},
                 {playerContext_2.PlayerOrderIndex,playerContext_2}
-            }; 
+            };
             return result;
         }
     }
 
-    public MainGameState currentState;
+    private MainGameState currentState;
     public float TurnDuration => mainGameSetting.turnDuration;
     public float currentTurnDuration;
 
@@ -126,5 +126,13 @@ public class MainGameContext
         return false;
     }
 
+    public void SetCurrentGameState(MainGameState state)
+    {
+        currentState = state;
+    }
+    public MainGameState GetCurrentGameState()
+    {
+        return currentState;
+    }
 }
 

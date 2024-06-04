@@ -105,6 +105,7 @@ namespace Konnek.KonnekLobby
 
         private void HandleOnClientDisconnect(ulong clientId)
         {
+            Debug.Log("Disconnected Client" + clientId);
             OnPlayerLeaveLobby(clientId);
             Loader.LoadingScene();
             Loader.Load(Loader.Scene.MainMenuScene);

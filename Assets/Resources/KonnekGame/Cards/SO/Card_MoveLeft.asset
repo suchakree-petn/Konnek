@@ -16,4 +16,4 @@ MonoBehaviour:
   cardName: Move Left
   cardDescription: Play column minus 1
   cardType: 0
-  card_prf: {fileID: 8144923631827704017, guid: 64af03b5dc51a9a4b977ed97165e5b24, type: 3}
+  CardSprite: {fileID: -2000944308, guid: 9819b41d7ad6f4f43a6e9f8e4ed7eee1, type: 3}

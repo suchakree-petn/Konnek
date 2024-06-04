@@ -30,7 +30,7 @@ public class KonnekBuilder : NetworkBehaviour
         {
             return;
         }
-        KonnekManager.OnPlayPieceSuccess += (context) => BuildBoardClientRpc(KonnekManager.konnekBoard[^1]);
+        KonnekManager.OnPlayPieceSuccess += (context) => BuildBoardClientRpc(KonnekManager.KonnekBoard[^1]);
     }
     [ClientRpc]
     public void BuildBoardClientRpc(Vector3 lastPosition)

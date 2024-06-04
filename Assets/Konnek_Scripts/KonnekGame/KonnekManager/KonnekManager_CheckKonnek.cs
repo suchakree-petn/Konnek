@@ -5,7 +5,7 @@ public partial class KonnekManager
 {
     public void CheckKonnek(MainGameContext context)
     {
-        List<Vector3> playedPositions = this.playedPositions;
+        List<Vector3> playedPositions = this.PlayedPositions;
 
         int konnekAmount = 0;
 

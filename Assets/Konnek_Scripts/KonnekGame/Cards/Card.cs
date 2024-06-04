@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class Card : ScriptableObject
 {
     public Action OnFinishPlayCard;
-    
+
     [Header("Info")]
     public ulong cardId;
     public string cardName;
@@ -15,7 +15,7 @@ public abstract class Card : ScriptableObject
     public CardType cardType;
 
     [Header("Reference")]
-    public Transform card_prf;
+    public Sprite CardSprite;
 
     static Dictionary<ulong, Card> _cache;
     public static Dictionary<ulong, Card> Cache
