@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
@@ -51,9 +52,14 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         }
     }
 
+    // [Header("Player HP")]
+
+    [Header("Button")]
     [SerializeField] private Button playPieceButton;
     [SerializeField] private Button endTurnButton;
 
+    [Header("VFX")]
+    [SerializeField] public GameObject HpDecreaseUI;
 
     protected override void InitAfterAwake()
     {
@@ -81,6 +87,13 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         OnPlayPieceSuccess += CheckKonnek;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            HpDecrease_ServerRpc(NetworkManager.LocalClientId, 5);
+        }
+    }
     private void KonnekManager_OnKonnekBoardListChanged(NetworkListEvent<Vector3> changeEvent)
     {
         OnKonnekBoardListChanged?.Invoke();
@@ -96,7 +109,7 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
     {
         if (MainGameManager.Instance.MainGameContext.IsOwnerTurn(clientId))
         {
-            PlayAtServerRpc(SelectedColumn,clientId);
+            PlayAtServerRpc(SelectedColumn, clientId);
             SetPlayPieceButton_ServerRpc(false, clientId);
         }
     }
@@ -202,39 +215,38 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         {
             localKonnekBoard.Add(positon);
         }
-        // switch (changeEvent.Type)
-        // {
-        //     case NetworkListEvent<Vector3>.EventType.Add:
-        //         localKonnekBoard.Add(changeEvent.Value);
-        //         break;
-        //     case NetworkListEvent<Vector3>.EventType.Value:
-        //         localKonnekBoard[changeEvent.Index] = changeEvent.Value;
-        //         break;
-        //     case NetworkListEvent<Vector3>.EventType.Full:
-        //         localKonnekBoard.Clear();
-        //         foreach (Vector3 positon in konnekBoard)
-        //         {
-        //             localKonnekBoard.Add(positon);
-        //         }
-        //         break;
-        //     case NetworkListEvent<Vector3>.EventType.Insert:
-        //         localKonnekBoard.Insert(changeEvent.Index, changeEvent.Value);
-        //         break;
-        //     case NetworkListEvent<Vector3>.EventType.RemoveAt:
-        //         localKonnekBoard.RemoveAt(changeEvent.Index);
-        //         break;
-        //     case NetworkListEvent<Vector3>.EventType.Remove:
-        //         localKonnekBoard.Remove(changeEvent.Value);
-        //         break;
-        //     case NetworkListEvent<Vector3>.EventType.Clear:
-        //         localKonnekBoard.Clear();
-        //         break;
-        //     default:
-        //         break;
-        // }
+    }
+
+    [ServerRpc(RequireOwnership = false), Command]
+    public void HpDecrease_ServerRpc(ulong clientId, int amount)
+    {
+        Command hpDecreaseCommand = new DecreaseHPCommand(clientId, amount);
+        MainGameManager.Instance.AddCommand(hpDecreaseCommand);
 
     }
 
+    [ClientRpc]
+    public void HpDecreasedAnimation_ClientRpc(ulong clientId)
+    {
+        Debug.Log("Here " + clientId);
+        Debug.Log("Here " + NetworkManager.Singleton.LocalClientId);
+        if (clientId != NetworkManager.Singleton.LocalClientId) return;
+        Camera.main.DOShakePosition(0.2f, 1);
+        GameObject hpDecreaseUI = HpDecreaseUI;
+        hpDecreaseUI.SetActive(true);
 
+        Image image = hpDecreaseUI.GetComponent<Image>();
+        image.DOFade(0, 0.22f).OnComplete(() =>
+        {
+            hpDecreaseUI.SetActive(false);
+            image.DOFade(1, 0);
+            HandleHpDecreasedAnimation_ServerRpc();
+        });
+    }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void HandleHpDecreasedAnimation_ServerRpc()
+    {
+        DecreaseHPCommand.OnHpDecreasedAnimationFinish?.Invoke();
+    }
 }

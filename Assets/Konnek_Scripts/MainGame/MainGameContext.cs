@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class MainGameContext
 {
+    public const int PLAYER_MAX_HP = 50;
     private readonly MainGameSetting mainGameSetting;
     [SerializeField] private PlayerContext playerContext_1;
     [SerializeField] private PlayerContext playerContext_2;
@@ -42,8 +43,8 @@ public class MainGameContext
 
     public MainGameContext(PlayerData player1, PlayerData player2, MainGameSetting mainGameSetting)
     {
-        playerContext_1 = new(player1, 1);
-        playerContext_2 = new(player2, 2);
+        playerContext_1 = new(player1, 1, PLAYER_MAX_HP);
+        playerContext_2 = new(player2, 2, PLAYER_MAX_HP);
         currentPlayer = playerContext_1;
         this.mainGameSetting = mainGameSetting;
         currentState = MainGameState.Default;
@@ -133,6 +134,17 @@ public class MainGameContext
     public MainGameState GetCurrentGameState()
     {
         return currentState;
+    }
+
+    public void SetPlayerHp(ulong clientId, int amount)
+    {
+        PlayerContext playerContext = PlayerContextByClientId[clientId];
+        playerContext.PlayerHp = amount;
+    }
+
+    public int GetPlayerHp(ulong clientId)
+    {
+        return PlayerContextByClientId[clientId].PlayerHp;
     }
 }
 

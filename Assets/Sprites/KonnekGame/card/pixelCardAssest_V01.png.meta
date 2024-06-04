@@ -69,7 +69,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -299,7 +299,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pixelCardAssest_V01_9
+      name: UI_PlayerHeart
       rect:
         serializedVersion: 2
         x: 429
@@ -1905,6 +1905,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      UI_PlayerHeart: -316540127
       goldPlate: -2081977557
       goldPlate_sheen: 858023608
       paper_ripped: -243025931
@@ -1986,7 +1987,6 @@ TextureImporter:
       pixelCardAssest_V01_80: 1708000566
       pixelCardAssest_V01_83: -120182247
       pixelCardAssest_V01_84: -1303143226
-      pixelCardAssest_V01_9: -316540127
       purple_card_front_bg: -267605847
       white_card: 1206462292
       yellow_card_front_bg: -17460889

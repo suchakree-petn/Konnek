@@ -72,3 +72,4 @@ MonoBehaviour:
     m_InternalValue: 4
   playPieceButton: {fileID: 0}
   endTurnButton: {fileID: 0}
+  HpDecreaseUI: {fileID: 0}
