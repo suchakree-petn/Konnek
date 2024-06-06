@@ -12,7 +12,7 @@ public class EndTurnCommand : Command
         PlayerContext currentPlayer = context.GetCurrentPlayerContext();
 
         MainGameState nextState = currentPlayer.PlayerOrderIndex == 1 ? MainGameState.Player_1_End_Turn : MainGameState.Player_2_End_Turn;
-        context.SetCurrentGameState(nextState);
+        MainGameManager.Instance.SetCurrentGameState(nextState);
         
         context.currentTurnDuration = context.TurnDuration;
         OnComplete(() =>

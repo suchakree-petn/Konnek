@@ -6,8 +6,10 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
     [Header("Game Context")]
     public MainGameContext MainGameContext;
     public CommandQueue CommandQueue;
+    public CommandQueue AnimationQueue;
     MainGameSetting mainGameSetting;
     public NetworkVariable<ulong> CurrentClientTurn = new();
+    private NetworkVariable<MainGameState> mainGameState = new();
 
     public bool IsTestOnePlayer;
 
@@ -24,35 +26,32 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
     }
     public override void OnNetworkSpawn()
     {
+        AnimationQueue = new();
+
         if (!IsServer) return;
         mainGameSetting = Resources.Load<MainGameSetting>("Game Setting/Main Game Setting/SO/Main Game Setting");
         MainGameContext = new(PlayerManager.Instance.PlayerData_1, PlayerManager.Instance.PlayerData_2, mainGameSetting);
         CommandQueue = new();
 
-        OnGameStart += (MainGameContext context) =>
-        {
-            KonnekManager.OnPlayPieceFailed += (ctx) => Debug.Log("Cant play this column"); ;
-            MainGameContext.SetCurrentGameState(MainGameState.Player_1_Start_Turn);
-        };
 
         OnStartTurn_Player_1 += (MainGameContext context) =>
         {
             SetCurrentPlayerContextClientRpc(1);
             MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
-            UpdateCurrentPlayerClientRpc(context.PlayerContextByPlayerOrder[1].PlayerData.PlayerName.ToString());
+            UpdateCurrentPlayerTextClientRpc(context.PlayerContextByPlayerOrder[1].PlayerData.PlayerName.ToString());
             CurrentClientTurn.Value = context.PlayerContextByPlayerOrder[1].GetClientId();
-            KonnekManager.Instance.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
-            KonnekManager.Instance.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
+            KonnekUIManager.Instance.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
+            KonnekUIManager.Instance.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
         };
 
         OnStartTurn_Player_2 += (MainGameContext context) =>
         {
             SetCurrentPlayerContextClientRpc(2);
             MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
-            UpdateCurrentPlayerClientRpc(context.PlayerContextByPlayerOrder[2].PlayerData.PlayerName.ToString());
+            UpdateCurrentPlayerTextClientRpc(context.PlayerContextByPlayerOrder[2].PlayerData.PlayerName.ToString());
             CurrentClientTurn.Value = context.PlayerContextByPlayerOrder[2].GetClientId();
-            KonnekManager.Instance.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
-            KonnekManager.Instance.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
+            KonnekUIManager.Instance.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
+            KonnekUIManager.Instance.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
         };
 
         OnDuringTurn_Player_1 += (MainGameContext context) =>
@@ -103,7 +102,18 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
         }
         CommandQueue.AddCommand(command);
     }
-
+    public void AddAnimationCommand(Command command, Command.OnCompleteCallback onCompleteCallback = null)
+    {
+        if (onCompleteCallback != null)
+        {
+            command.OnComplete(onCompleteCallback);
+        }
+        else
+        {
+            Debug.Log("No On complete");
+        }
+        AnimationQueue.AddCommand(command);
+    }
     public void StartGame()
     {
         OnGameStart?.Invoke(MainGameContext);
@@ -113,6 +123,15 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
     private void SetCurrentPlayerContextClientRpc(int playerIndex)
     {
         MainGameContext.SetCurrentPlayerContext(playerIndex);
+    }
+
+    public void SetCurrentGameState(MainGameState state)
+    {
+        mainGameState.Value = state;
+    }
+    public MainGameState GetCurrentGameState()
+    {
+        return mainGameState.Value;
     }
 
 }

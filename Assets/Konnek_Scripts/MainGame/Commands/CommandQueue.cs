@@ -18,11 +18,11 @@ public class CommandQueue
     {
         command.OnComplete(OnFinishExecute);
         commandsQueue.Enqueue(command);
-        TryExecuteCommandsServerRpc();
+        TryExecuteCommands();
         Debug.Log($"Command queue size: {commandsQueue.Count}");
     }
     [ServerRpc(RequireOwnership = false)]
-    public void TryExecuteCommandsServerRpc()
+    public void TryExecuteCommands()
     {
         if (isExecuting) return;
         if (commandsQueue.Count > 0)
@@ -30,9 +30,9 @@ public class CommandQueue
             isExecuting = true;
             // Debug.Log($"Command queue size: {commandsQueue.Count}");
             Command command = commandsQueue.Dequeue();
-            if (commandsQueue.Count > 0 && MainGameManager.Instance.MainGameContext.GetCurrentGameState() == MainGameState.Idle)
+            if (commandsQueue.Count > 0 && MainGameManager.Instance.GetCurrentGameState() == MainGameState.Idle)
             {
-                command.OnComplete(TryExecuteCommandsServerRpc);
+                command.OnComplete(TryExecuteCommands);
             }
             command.Execute();
         }
@@ -40,6 +40,6 @@ public class CommandQueue
     public void OnFinishExecute()
     {
         isExecuting = false;
-        TryExecuteCommandsServerRpc();
+        TryExecuteCommands();
     }
 }

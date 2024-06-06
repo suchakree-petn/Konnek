@@ -175,7 +175,16 @@ namespace Konnek.KonnekLobby
                 OnJoinStarted?.Invoke(this, EventArgs.Empty);
 
                 Allocation allocation = await AllocateRelay();
-                string relayJoinCode = await GetRelayJoinCode(allocation);
+                string relayJoinCode;
+                if (allocation != default)
+                {
+                    relayJoinCode = await GetRelayJoinCode(allocation);
+                }
+                else
+                {
+                    OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
+                    return;
+                }
 
                 var options = new CreateLobbyOptions
                 {
@@ -206,13 +215,10 @@ namespace Konnek.KonnekLobby
                 {
                     Debug.Log("Player name: " + player.Data[KEY_PLAYER_NAME].Value);
                 }
-                // await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions()
-                // {
-                //     Data = new Dictionary<string, DataObject>
-                //     {
-                //     }
-                // });
+
                 NetworkManager.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
+
+
                 KonnekMultiplayerManager.Instance.StartHost();
 
                 NetworkManager.SceneManager.OnLoadComplete += LobbyManager_OnNetworkManagerOnLoadCompleted;
@@ -385,7 +391,15 @@ namespace Konnek.KonnekLobby
                 }
                 string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
                 JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
-                NetworkManager.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+                if (joinAllocation != default)
+                {
+                    NetworkManager.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+                }
+                else
+                {
+                    OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
+                    return;
+                }
 
                 KonnekMultiplayerManager.Instance.StartClient();
 

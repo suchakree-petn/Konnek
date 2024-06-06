@@ -14,14 +14,14 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
     public event EventHandler OnPlayerDataNetworkListChanged;
 
 
-    public NetworkList<PlayerData> playerDataNetworkList;
+    public NetworkList<PlayerData> PlayerDataNetworkList;
     private string playerName;
 
 
     protected override void InitAfterAwake()
     {
-        playerDataNetworkList = new NetworkList<PlayerData>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-        playerDataNetworkList.OnListChanged += PlayerDataNetworkList_OnListChanged;
+        PlayerDataNetworkList = new NetworkList<PlayerData>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        PlayerDataNetworkList.OnListChanged += PlayerDataNetworkList_OnListChanged;
     }
 
     public string GetPlayerName()
@@ -31,7 +31,7 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
     }
     public NetworkList<PlayerData> GetPlayerDataNetworkList()
     {
-        return playerDataNetworkList;
+        return PlayerDataNetworkList;
     }
     public void SetPlayerName(string playerName)
     {
@@ -75,22 +75,22 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
     }
     private void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
     {
-        if(playerDataNetworkList == null) return;
+        if(PlayerDataNetworkList == null) return;
         
-        for (int i = 0; i < playerDataNetworkList.Count; i++)
+        for (int i = 0; i < PlayerDataNetworkList.Count; i++)
         {
-            PlayerData playerData = playerDataNetworkList[i];
+            PlayerData playerData = PlayerDataNetworkList[i];
             if (playerData.ClientId == clientId)
             {
                 // Disconnected!
-                playerDataNetworkList.RemoveAt(i);
+                PlayerDataNetworkList.RemoveAt(i);
             }
         }
     }
 
     private void NetworkManager_Server_OnClientConnectedCallback(ulong clientId)
     {
-        playerDataNetworkList.Add(new PlayerData
+        PlayerDataNetworkList.Add(new PlayerData
         {
             ClientId = clientId,
         });
@@ -140,11 +140,11 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
     {
         int playerDataIndex = GetPlayerDataIndexFromClientId(serverRpcParams.Receive.SenderClientId);
 
-        PlayerData playerData = playerDataNetworkList[playerDataIndex];
+        PlayerData playerData = PlayerDataNetworkList[playerDataIndex];
 
         playerData.PlayerName = playerName.Value;
 
-        playerDataNetworkList[playerDataIndex] = playerData;
+        PlayerDataNetworkList[playerDataIndex] = playerData;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -152,11 +152,11 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
     {
         int playerDataIndex = GetPlayerDataIndexFromClientId(serverRpcParams.Receive.SenderClientId);
 
-        PlayerData playerData = playerDataNetworkList[playerDataIndex];
+        PlayerData playerData = PlayerDataNetworkList[playerDataIndex];
 
         playerData.PlayerId = playerId;
 
-        playerDataNetworkList[playerDataIndex] = playerData;
+        PlayerDataNetworkList[playerDataIndex] = playerData;
     }
 
     private void NetworkManager_Client_OnClientDisconnectCallback(ulong clientId)
@@ -167,14 +167,14 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
 
     public bool IsPlayerIndexConnected(int playerIndex)
     {
-        return playerIndex < playerDataNetworkList.Count;
+        return playerIndex < PlayerDataNetworkList.Count;
     }
 
     public int GetPlayerDataIndexFromClientId(ulong clientId)
     {
-        for (int i = 0; i < playerDataNetworkList.Count; i++)
+        for (int i = 0; i < PlayerDataNetworkList.Count; i++)
         {
-            if (playerDataNetworkList[i].ClientId == clientId)
+            if (PlayerDataNetworkList[i].ClientId == clientId)
             {
                 return i;
             }
@@ -184,7 +184,7 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
 
     public PlayerData GetPlayerDataFromClientId(ulong clientId)
     {
-        foreach (PlayerData playerData in playerDataNetworkList)
+        foreach (PlayerData playerData in PlayerDataNetworkList)
         {
             if (playerData.ClientId == clientId)
             {
@@ -201,7 +201,7 @@ public class KonnekMultiplayerManager : NetworkSingleton<KonnekMultiplayerManage
 
     public PlayerData GetPlayerDataFromPlayerIndex(int playerIndex)
     {
-        return playerDataNetworkList[playerIndex];
+        return PlayerDataNetworkList[playerIndex];
     }
 
     // public void KickPlayer(ulong clientId) {

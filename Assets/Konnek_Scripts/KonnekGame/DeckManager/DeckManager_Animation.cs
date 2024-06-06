@@ -2,10 +2,11 @@ using UnityEngine;
 using DG.Tweening;
 using System;
 using UnityEngine.UI;
+
 public partial class DeckManager
 {
     [SerializeField] private DeckAnimationConfig deckAnimationConfig;
-    internal void DrawAnimation(Transform card, int deckIndex)
+    internal void DrawAnimation(Transform card, ulong clientId, DrawCardAnimation animation)
     {
         if (card == null)
         {
@@ -16,31 +17,25 @@ public partial class DeckManager
         Image image = card.GetComponent<Image>();
         image.raycastTarget = false;
 
-        Vector3 spawnPos = deckAnimationConfig.GetDeckTransformByIndex(deckIndex).position;
+        Vector3 spawnPos = PlayerDeckTransformDict[clientId].position;
         card.position = spawnPos;
-        GameObject lastCardInHand = PlayerHandManager.Instance.GetLastCard();
-        Vector3 lastCardPosition;
-        lastCardPosition = lastCardInHand.transform.position;
+        GameObject lastCardInHand = PlayerHandManager.Instance.GetLastCard(clientId);
+        Vector3 lastCardPosition = lastCardInHand.transform.position;
+        Debug.Log(lastCardPosition);
         card.DOMove(lastCardPosition, deckAnimationConfig.moveToHandDuration)
         .OnComplete(() =>
         {
             image.raycastTarget = true;
-            PlayerHandManager.SetCardAsChild(card);
+            PlayerHandManager.Instance.SetCardAsChild(card, clientId);
+            animation.OnFinishDrawCard?.Invoke();
         })
         .SetEase(deckAnimationConfig.moveToHandCurve);
     }
-
 }
 [Serializable]
 public class DeckAnimationConfig
 {
     public float moveToHandDuration;
     public AnimationCurve moveToHandCurve;
-    public Transform deckTransform_1;
-    public Transform deckTransform_2;
 
-    public Transform GetDeckTransformByIndex(int index)
-    {
-        return index == 1 ? deckTransform_1 : deckTransform_2;
-    }
 }

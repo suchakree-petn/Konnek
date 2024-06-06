@@ -6,6 +6,8 @@ using UnityEngine;
 public class MainGameContext
 {
     public const int PLAYER_MAX_HP = 50;
+    public const int START_CARD_AMOUNT = 4;
+    public const int DRAW_CARD_QUOTA_AMOUNT = 1;
     private readonly MainGameSetting mainGameSetting;
     [SerializeField] private PlayerContext playerContext_1;
     [SerializeField] private PlayerContext playerContext_2;
@@ -52,7 +54,7 @@ public class MainGameContext
     }
 
 
-    public PlayerContext GetPlayerContext(int playerIndex)
+    public PlayerContext GetPlayerContextByIndex(int playerIndex)
     {
         if (playerIndex == 1)
         {
@@ -60,9 +62,9 @@ public class MainGameContext
         }
         return playerContext_2;
     }
-    public PlayerContext GetPlayerContextByPlayerId(ulong playerId)
+    public PlayerContext GetPlayerContextByPlayerId(string playerId)
     {
-        if (playerId == playerContext_1.GetClientId())
+        if (playerId == playerContext_1.PlayerData.PlayerId)
         {
             return playerContext_1;
         }
@@ -70,7 +72,7 @@ public class MainGameContext
     }
     public PlayerContext GetPlayerContextByClientId(ulong clientId)
     {
-        if (clientId == 0)
+        if (playerContext_1.GetClientId() == clientId)
         {
             return playerContext_1;
         }
@@ -84,7 +86,7 @@ public class MainGameContext
         }
         return playerContext_2;
     }
-    public PlayerContext GetOtherPlayerContext()
+    public PlayerContext GetOpponentPlayerContext()
     {
         if (currentPlayer.PlayerOrderIndex == 2)
         {
@@ -94,11 +96,11 @@ public class MainGameContext
     }
     public PlayerContext GetOwnerPlayerContext()
     {
-        return GetPlayerContextByPlayerId(0);
+        return GetPlayerContextByClientId(NetworkManager.Singleton.LocalClientId);
     }
     public void SetCurrentPlayerContext(int playerIndex)
     {
-        PlayerContext currentPlayer = GetPlayerContext(playerIndex);
+        PlayerContext currentPlayer = GetPlayerContextByIndex(playerIndex);
         this.currentPlayer = currentPlayer;
     }
     public bool IsOwnerTurn(ulong clientId)
@@ -107,15 +109,12 @@ public class MainGameContext
     }
     public int GetPlayerIndexByClientId(ulong clientId)
     {
-        if ((int)clientId == playerContext_1.PlayerOrderIndex - 1)
+        if (clientId == playerContext_1.GetClientId())
         {
             return playerContext_1.PlayerOrderIndex;
         }
-        else if ((int)clientId == playerContext_2.PlayerOrderIndex - 1)
-        {
-            return playerContext_2.PlayerOrderIndex;
-        }
-        return -999;
+        return playerContext_2.PlayerOrderIndex;
+
     }
     public bool CanDraw(ulong clientId)
     {
@@ -127,24 +126,15 @@ public class MainGameContext
         return false;
     }
 
-    public void SetCurrentGameState(MainGameState state)
-    {
-        currentState = state;
-    }
-    public MainGameState GetCurrentGameState()
-    {
-        return currentState;
-    }
-
     public void SetPlayerHp(ulong clientId, int amount)
     {
         PlayerContext playerContext = PlayerContextByClientId[clientId];
-        playerContext.PlayerHp = amount;
+        playerContext.PlayerCurrentHp = amount;
     }
 
     public int GetPlayerHp(ulong clientId)
     {
-        return PlayerContextByClientId[clientId].PlayerHp;
+        return PlayerContextByClientId[clientId].PlayerCurrentHp;
     }
 }
 

@@ -8,7 +8,7 @@ public partial class MainGameManager
     [SerializeField] private TextMeshProUGUI currentPlayer;
 
     [ClientRpc]
-    public void UpdateCurrentPlayerClientRpc(string currentPlayerName)
+    public void UpdateCurrentPlayerTextClientRpc(string currentPlayerName)
     {
         currentPlayer.text = "Current Player:" + currentPlayerName;
     }
