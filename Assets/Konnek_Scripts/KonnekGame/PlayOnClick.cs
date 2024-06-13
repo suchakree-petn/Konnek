@@ -7,7 +7,7 @@ public class PlayOnClick : MonoBehaviour
 {
     private void OnMouseDown()
     {
-        Command playCommand = new PlayAtCommand((int)transform.localPosition.x,
+        Command playCommand = new PlayPieceCommand((int)transform.localPosition.x,
             MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().PlayerOrderIndex);
         playCommand.OnComplete(TestCallback);
         MainGameManager.Instance.CommandQueue.AddCommand(playCommand);

@@ -21,7 +21,6 @@ public partial class DeckManager
         card.position = spawnPos;
         GameObject lastCardInHand = PlayerHandManager.Instance.GetLastCard(clientId);
         Vector3 lastCardPosition = lastCardInHand.transform.position;
-        Debug.Log(lastCardPosition);
         card.DOMove(lastCardPosition, deckAnimationConfig.moveToHandDuration)
         .OnComplete(() =>
         {

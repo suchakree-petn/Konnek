@@ -16,13 +16,20 @@ public partial class MainGameManager
     }
     public void DuringTurnTimer(MainGameContext context)
     {
-        if (context.currentTurnDuration > 0)
+        MainGameState mainGameState = GetCurrentGameState();
+        if (context.currentTurnDuration > 0
+        && (mainGameState == MainGameState.Player_1_During_Turn || mainGameState == MainGameState.Player_2_During_Turn))
         {
-            context.currentTurnDuration -= Time.deltaTime;
+            if (AnimationQueue.CurrentExecutingCommand != StartTurnAnimation.START_TURN_ANIMATION_NAME)
+            {
+                context.currentTurnDuration -= Time.deltaTime;
+            }
         }
         else
         {
-            KonnekManager.Instance.EndTurn_ServerRpc(context.GetCurrentPlayerContext().GetClientId());
+            Debug.Log("Time out");
+            KonnekManager.Instance.EndTurn(CurrentClientTurn);
+            KonnekUIManager.Instance.SetEndTurnButton_ClientRpc(false, CurrentClientTurn);
         }
     }
 

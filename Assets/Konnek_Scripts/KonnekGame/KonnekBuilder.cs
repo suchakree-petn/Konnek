@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
 using DG.Tweening;
 using Unity.Netcode;
 using UnityEngine;
 
 public class KonnekBuilder : NetworkBehaviour
 {
-    private KonnekManager KonnekManager => KonnekManager.Instance;
-
     [Header("Animation Config")]
     [SerializeField] private float dropDuration;
     [SerializeField] private AnimationCurve dropCurve;
-    public static Action OnCompleteDropAnimation;
 
     [Header("Reference")]
     [SerializeField] private Transform piece_prf;
@@ -30,10 +25,9 @@ public class KonnekBuilder : NetworkBehaviour
         {
             return;
         }
-        KonnekManager.OnPlayPieceSuccess += (context) => BuildBoardClientRpc(KonnekManager.KonnekBoard[^1]);
     }
-    [ClientRpc]
-    public void BuildBoardClientRpc(Vector3 lastPosition)
+
+    public void PlayPieceAnimation(Vector3 lastPosition,PlayPieceAnimation command)
     {
         Transform piece = Instantiate(piece_prf,board_parent);
         piece.gameObject.SetActive(false);
@@ -54,8 +48,7 @@ public class KonnekBuilder : NetworkBehaviour
         piece.DOLocalMoveY(lastPosition.y, dropDuration).SetEase(dropCurve)
         .OnComplete(() =>
         {
-            if (!IsServer) return;
-            OnCompleteDropAnimation?.Invoke();
+            command.OnPlayPieceAnimationFinish?.Invoke();
         });
     }
 

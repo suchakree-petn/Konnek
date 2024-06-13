@@ -1,13 +1,13 @@
 using System;
 
-public class DecreaseHPAnimation : Command
+public class DecreaseHpAnimation : Command
 {
     private ulong clientId;
     private int from;
     private int to;
     public static Action OnHpDecreasedAnimationFinish;
 
-    public DecreaseHPAnimation(ulong clientId, int from, int to)
+    public DecreaseHpAnimation(ulong clientId, int from, int to)
     {
         this.clientId = clientId;
         this.from = from;

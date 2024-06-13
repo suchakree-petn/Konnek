@@ -38,7 +38,6 @@ public class MainGameContext
         }
     }
 
-    private MainGameState currentState;
     public float TurnDuration => mainGameSetting.turnDuration;
     public float currentTurnDuration;
 
@@ -49,7 +48,6 @@ public class MainGameContext
         playerContext_2 = new(player2, 2, PLAYER_MAX_HP);
         currentPlayer = playerContext_1;
         this.mainGameSetting = mainGameSetting;
-        currentState = MainGameState.Default;
         currentTurnDuration = mainGameSetting.turnDuration;
     }
 
@@ -105,7 +103,7 @@ public class MainGameContext
     }
     public bool IsOwnerTurn(ulong clientId)
     {
-        return MainGameManager.Instance.CurrentClientTurn.Value == clientId;
+        return MainGameManager.Instance.CurrentClientTurn == clientId;
     }
     public int GetPlayerIndexByClientId(ulong clientId)
     {

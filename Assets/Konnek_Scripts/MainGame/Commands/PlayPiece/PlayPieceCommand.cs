@@ -1,23 +1,23 @@
-using System.Linq;
 using UnityEngine;
 
-public class PlayAtCommand : Command
+public class PlayPieceCommand : Command
 {
-    KonnekManager konnekManager;
     int column;
     int playerIndex;
-    public PlayAtCommand(int column, int playerIndex)
+    public PlayPieceCommand(int column, int playerIndex)
     {
-        konnekManager = KonnekManager.Instance;
         this.column = column;
         this.playerIndex = playerIndex;
     }
     public override void Execute()
     {
+        KonnekManager konnekManager = KonnekManager.Instance;
+        MainGameManager mainGameManager = MainGameManager.Instance;
+
         konnekManager.ColumnAmount.TryGetValue(column, out int amount);
         if (amount >= 6)
         {
-            KonnekManager.OnPlayPieceFailed?.Invoke(MainGameManager.Instance.MainGameContext);
+            KonnekManager.OnPlayPieceFailed?.Invoke(mainGameManager.MainGameContext);
             base.Execute();
             return;
         }
@@ -25,8 +25,9 @@ public class PlayAtCommand : Command
         Vector3 playedPosition = new(column, amount, playerIndex);
         konnekManager.KonnekBoard.Add(playedPosition);
         konnekManager.ColumnAmount[column] = amount;
-        KonnekManager.OnPlayPieceSuccess?.Invoke(MainGameManager.Instance.MainGameContext);
-        KonnekBuilder.OnCompleteDropAnimation += base.Execute;
+        KonnekManager.OnPlayPieceSuccess?.Invoke(mainGameManager.MainGameContext);
+        konnekManager.PlayPiece_ClientRpc(playedPosition);
+        base.Execute();
     }
 
 }

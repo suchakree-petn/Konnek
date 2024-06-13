@@ -1,11 +1,11 @@
 using System;
 
-public class DecreaseHPCommand : Command
+public class DecreaseHpCommand : Command
 {
     private ulong clientId;
     private int amount;
 
-    public DecreaseHPCommand(ulong clientId, int amount)
+    public DecreaseHpCommand(ulong clientId, int amount)
     {
         this.clientId = clientId;
         this.amount = amount;

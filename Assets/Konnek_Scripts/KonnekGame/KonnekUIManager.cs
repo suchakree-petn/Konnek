@@ -5,15 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using Unity.Services.Lobbies.Models;
-using Konnek.KonnekLobby;
-using System.Linq;
+using System;
 
 public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
 {
-
-
-
     [Header("Reference")]
     [SerializeField] private Button playPieceButton;
     [SerializeField] private Button endTurnButton;
@@ -24,6 +19,8 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
 
     [Header("VFX")]
     [SerializeField] private GameObject HpDecreaseUI;
+    [SerializeField] private GameObject startPlayerTurnUI;
+
     protected override void InitAfterAwake()
     {
         playPieceButton.onClick.AddListener(() => PlayButton(NetworkManager.LocalClientId));
@@ -31,9 +28,8 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
         InitPlayerHpTextDict();
         InitPlayerHpText();
 
+
     }
-
-
 
     private void Update()
     {
@@ -45,15 +41,16 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
 
     public override void OnNetworkSpawn()
     {
-    }
+        if (!IsServer) return;
 
+    }
 
     public void PlayButton(ulong clientId)
     {
         if (MainGameManager.Instance.MainGameContext.IsOwnerTurn(clientId))
         {
             KonnekManager konnekManager = KonnekManager.Instance;
-            konnekManager.PlayAtServerRpc(konnekManager.SelectedColumn, clientId);
+            konnekManager.PlayPiece_ServerRpc(konnekManager.SelectedColumn, clientId);
             SetPlayPieceButton_ServerRpc(false, clientId);
         }
     }
@@ -68,7 +65,7 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
     public void SetPlayPieceButton_ClientRpc(bool isInteractable, ulong clientId)
     {
         if (clientId != NetworkManager.LocalClientId) return;
-        Debug.Log($"Client: {clientId} set to {isInteractable}");
+        // Debug.Log($"Client: {clientId} set to {isInteractable}");
         SetPlayPieceButton(isInteractable);
     }
 
@@ -79,14 +76,35 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
 
     public void EndTurnButton(ulong clientId)
     {
-        MainGameContext mainGameContext = MainGameManager.Instance.MainGameContext;
+
+        MainGameManager mainGameManager = MainGameManager.Instance;
+        MainGameContext mainGameContext = mainGameManager.MainGameContext;
+
         if (mainGameContext.IsOwnerTurn(clientId))
         {
-            KonnekManager konnekManager = KonnekManager.Instance;
-            konnekManager.EndTurn_ServerRpc(clientId);
-            SetEndTurnButton_ServerRpc(false, clientId);
+            KonnekManager.Instance.EndTurn_ServerRpc(clientId);
+
+            SetEndTurnButton(false);
         }
     }
+
+    public void StartPlayerTurnAnimation(MainGameContext mainGameContext)
+    {
+        ulong clientId = mainGameContext.GetCurrentPlayerContext().GetClientId();
+        StartPlayerTurnAnimation_ClientRpc(clientId);
+    }
+
+    [ClientRpc]
+    private void StartPlayerTurnAnimation_ClientRpc(ulong clientId)
+    {
+        if (clientId != NetworkManager.LocalClientId) return;
+        MainGameManager mainGameManager = MainGameManager.Instance;
+
+        Command startTurnAnimation = new StartTurnAnimation();
+        mainGameManager.AddAnimationCommand(startTurnAnimation);
+        mainGameManager.AnimationQueue.TryExecuteCommands();
+    }
+
     [ServerRpc(RequireOwnership = false)]
     public void SetEndTurnButton_ServerRpc(bool isInteractable, ulong clientId)
     {
@@ -113,14 +131,14 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
         to = to < 0 ? 0 : to;
 
         HpDecreasedAnimation_ClientRpc(clientId, from, to);
-        Command hpDecreaseCommand = new DecreaseHPCommand(clientId, amount);
+        Command hpDecreaseCommand = new DecreaseHpCommand(clientId, amount);
         MainGameManager.Instance.AddCommand(hpDecreaseCommand);
     }
 
     [ClientRpc]
     private void HpDecreasedAnimation_ClientRpc(ulong clientId, int from, int to)
     {
-        Command command = new DecreaseHPAnimation(clientId, from, to);
+        Command command = new DecreaseHpAnimation(clientId, from, to);
         MainGameManager.Instance.AddAnimationCommand(command);
 
     }
@@ -154,16 +172,28 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
         }
     }
 
-    private void UpdateHpUIAmout(ulong clientId, int amount)
+    public void ShowStartPlayerTurnUI()
     {
+        CanvasGroup canvasGroup = startPlayerTurnUI.GetComponent<CanvasGroup>();
+        canvasGroup.DOFade(0, 0);
+        startPlayerTurnUI.SetActive(true);
+        canvasGroup.DOFade(1, 0.5f).SetEase(Ease.InSine);
+
+        float waitTime = 1f;
+        DOTween.To(() => waitTime, x => waitTime = x, 0, 1).OnComplete(() =>
+        {
+            canvasGroup.DOFade(0, 0.5f).SetEase(Ease.OutSine).OnComplete(() =>
+            {
+                startPlayerTurnUI.SetActive(false);
+                StartTurnAnimation.OnStartTurnAnimationFinish?.Invoke();
+                Debug.Log("Finish end turn");
+            });
+        });
+
 
     }
 
-    [ClientRpc]
-    public void HpDecreasedAnimation_ClientRpc(ulong clientId, int decreaseTo)
-    {
-        // HpDecreasedAnimation(clientId, decreaseTo);
-    }
+
 
     public void HpDecreasedAnimation(ulong clientId, int startHp, int finishHp)
     {
@@ -187,7 +217,7 @@ public class KonnekUIManager : NetworkSingleton<KonnekUIManager>
         .OnComplete(() =>
         {
             Camera.main.transform.DOMove(new(0, 0, -10), 0);
-            DecreaseHPAnimation.OnHpDecreasedAnimationFinish?.Invoke();
+            DecreaseHpAnimation.OnHpDecreasedAnimationFinish?.Invoke();
         });
     }
 

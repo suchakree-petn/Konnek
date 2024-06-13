@@ -50,7 +50,6 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         }
     }
     private static uint cardInstanceId = 0;
-
     public static uint CardInstanceIdPointer
     {
         get
@@ -60,6 +59,8 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
             return currentId;
         }
     }
+
+    public KonnekBuilder konnekBuilder;
 
     protected override void InitAfterAwake()
     {
@@ -85,9 +86,10 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
         OnPlayPieceSuccess += CheckKonnek;
 
 
-        MainGameManager.Instance.OnGameStart += (MainGameContext context) =>
+        MainGameManager.Instance.OnStartGame += (MainGameContext context) =>
         {
             OnPlayPieceFailed += (ctx) => Debug.Log("Cant play this column"); ;
+            OnInitPlayerFinish += (ctx) => Debug.Log("Init player finish");;
             OnInitPlayerFinish += (ctx) => MainGameManager.Instance.SetCurrentGameState(MainGameState.Player_1_Start_Turn);
 
             DeckManager.Instance.DrawCardFromTopDeckServerRpc(
@@ -98,18 +100,19 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
                 context.PlayerContextByPlayerOrder[2].GetClientId()
                 , MainGameContext.START_CARD_AMOUNT);
 
-            OnInitPlayerFinish?.Invoke(context); // Ready to start player 1 turn
+            // Ready to start player 1 turn
+            MainGameManager.Instance.AnimationQueue.GetLastCommand().OnComplete(() => OnInitPlayerFinish?.Invoke(context));
         };
         MainGameManager.Instance.OnStartTurn_Player_1 += (MainGameContext context) =>
         {
-            PlayerContext playerContext = context.PlayerContextByPlayerOrder[1]; 
-            
+            PlayerContext playerContext = context.PlayerContextByPlayerOrder[1];
+
             // Set draw card quota when start turn
             int drawAmount = MainGameContext.DRAW_CARD_QUOTA_AMOUNT + playerContext.BonusDrawCardQuota;
             playerContext.DrawCardQuota = drawAmount;
 
             // Draw card when start turn
-            DeckManager.Instance.DrawCardFromTopDeckServerRpc( 
+            DeckManager.Instance.DrawCardFromTopDeckServerRpc(
                 playerContext.GetClientId()
                 , playerContext.DrawCardQuota);
 
@@ -118,11 +121,11 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
 
         MainGameManager.Instance.OnStartTurn_Player_2 += (MainGameContext context) =>
         {
-            PlayerContext playerContext = context.PlayerContextByPlayerOrder[2]; 
+            PlayerContext playerContext = context.PlayerContextByPlayerOrder[2];
 
             // Set draw card quota when start turn
             int drawAmount = MainGameContext.DRAW_CARD_QUOTA_AMOUNT + playerContext.BonusDrawCardQuota;
-            
+
             playerContext.DrawCardQuota = drawAmount;
             // Draw card when start turn
             DeckManager.Instance.DrawCardFromTopDeckServerRpc(
@@ -165,27 +168,19 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
     [ServerRpc(RequireOwnership = false)]
     public void EndTurn_ServerRpc(ulong clientId)
     {
+        EndTurn(clientId);
+    }
+
+    public void EndTurn(ulong clientId)
+    {
         MainGameManager mainGameManager = MainGameManager.Instance;
-
-        // check is player play piece if not then play it
         MainGameContext mainGameContext = mainGameManager.MainGameContext;
-        if (!mainGameContext.PlayerContextByClientId[clientId].IsPlayedPiece)
-        {
-            KonnekUIManager.Instance.PlayButton(clientId);
-        }
-        mainGameContext.PlayerContextByClientId[clientId].IsPlayedPiece = false;
-
-        // check is all command execute before end turn
         CommandQueue commandsQueue = mainGameManager.CommandQueue;
-        if (commandsQueue.commandsQueue.Count > 0)
-        {
-            mainGameManager.SetCurrentGameState(MainGameState.Idle);
-            mainGameContext.GetCurrentPlayerContext().IsPlayerTurn = false;
-        }
+        PlayerContext playerContext = mainGameContext.PlayerContextByClientId[clientId];
 
         // end turn
-        Command endTurnCommand = new EndTurnCommand();
-        commandsQueue.AddCommand(endTurnCommand);
+        Command endTurnCommand = new EndTurnCommand(playerContext.PlayerOrderIndex);
+        mainGameManager.AddCommand(endTurnCommand);
         commandsQueue.TryExecuteCommands();
     }
 
@@ -205,14 +200,25 @@ public partial class KonnekManager : NetworkSingleton<KonnekManager>
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void PlayAtServerRpc(int column, ulong clientId)
+    public void PlayPiece_ServerRpc(int column, ulong clientId)
     {
-        if (MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().IsPlayedPiece) return;
+        MainGameManager mainGameManager = MainGameManager.Instance;
+        MainGameContext mainGameContext = mainGameManager.MainGameContext;
+        PlayerContext playerContext = mainGameContext.PlayerContextByClientId[clientId];
+        if (playerContext.IsPlayedPiece) return;
 
-        Command playCommand = new PlayAtCommand(column,
-            MainGameManager.Instance.MainGameContext.GetCurrentPlayerContext().PlayerOrderIndex);
-        MainGameManager.Instance.CommandQueue.AddCommand(playCommand);
-        MainGameManager.Instance.MainGameContext.PlayerContextByClientId[clientId].IsPlayedPiece = true;
+        Command playCommand = new PlayPieceCommand(column, playerContext.PlayerOrderIndex);
+        mainGameManager.AddCommand(playCommand);
+        playerContext.IsPlayedPiece = true;
+    }
+
+    [ClientRpc]
+    public void PlayPiece_ClientRpc(Vector3 playPosition)
+    {
+        MainGameManager mainGameManager = MainGameManager.Instance;
+
+        Command playCommand = new PlayPieceAnimation(playPosition);
+        mainGameManager.AddAnimationCommand(playCommand);
     }
 
     public bool IsColumnFull(int columnIndex)

@@ -288,7 +288,7 @@ namespace Konnek.KonnekLobby
                     heartbeatTimer = heartbeatTimerMax;
 
 
-                    Debug.Log(" ");
+                    // Debug.Log(" ");
                     await LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
                 }
             }

@@ -64,7 +64,6 @@ public partial class PlayerHandManager : NetworkSingleton<PlayerHandManager>
         }
 
         Transform lastCard = playerHandTransform.GetChild(playerHandTransform.childCount - 1);
-        Debug.Log(clientId + " have " + playerHandTransform.childCount + " card " + lastCard.position);
         return lastCard.gameObject;
     }
     public void SetCardAsChild(Transform card, ulong clientId)
