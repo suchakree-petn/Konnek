@@ -25,8 +25,8 @@ public class PlayPieceCommand : Command
         Vector3 playedPosition = new(column, amount, playerIndex);
         konnekManager.KonnekBoard.Add(playedPosition);
         konnekManager.ColumnAmount[column] = amount;
-        KonnekManager.OnPlayPieceSuccess?.Invoke(mainGameManager.MainGameContext);
         konnekManager.PlayPiece_ClientRpc(playedPosition);
+        KonnekManager.OnPlayPieceSuccess?.Invoke(mainGameManager.MainGameContext);
         base.Execute();
     }
 

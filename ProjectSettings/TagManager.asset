@@ -51,3 +51,6 @@ TagManager:
   - name: Deck
     uniqueID: 2268422297
     locked: 0
+  - name: BoardVFX
+    uniqueID: 1643376841
+    locked: 0

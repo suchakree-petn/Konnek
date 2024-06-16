@@ -93,15 +93,12 @@ namespace Konnek.KonnekLobby
         }
         public void UpdatePlayerJoined()
         {
-            Debug.Log("Update lobby UI");
             foreach (Transform child in parent)
             {
                 Destroy(child.gameObject);
             }
             foreach (PlayerLobby player in LobbyManager.Instance.joinedPlayerLobby)
             {
-                Debug.Log($"{player.PlayerName} : {player.IsReady}");
-
                 Transform playerLobby = Instantiate(playerLobby_prf, parent);
                 TextMeshProUGUI playerName = playerLobby.GetComponent<TextMeshProUGUI>();
                 playerName.text = player.PlayerName.ToString();
@@ -138,7 +135,6 @@ namespace Konnek.KonnekLobby
             {
                 if (joinedPlayerLobby[i].ClientId == clientId)
                 {
-                    Debug.Log($"client {clientId} write on client {joinedPlayerLobby[i].ClientId}");
                     PlayerLobby playerLobby = joinedPlayerLobby[i];
                     playerLobby.IsReady = !playerLobby.IsReady;
                     LobbyManager.Instance.SetPlayerLobby_ServerRpc(i, playerLobby);

@@ -8,6 +8,7 @@ public class MainGameContext
     public const int PLAYER_MAX_HP = 50;
     public const int START_CARD_AMOUNT = 4;
     public const int DRAW_CARD_QUOTA_AMOUNT = 1;
+
     private readonly MainGameSetting mainGameSetting;
     [SerializeField] private PlayerContext playerContext_1;
     [SerializeField] private PlayerContext playerContext_2;
@@ -39,7 +40,8 @@ public class MainGameContext
     }
 
     public float TurnDuration => mainGameSetting.turnDuration;
-    public float currentTurnDuration;
+    public float CurrentTurnDuration;
+    public int PlayColumn;
 
 
     public MainGameContext(PlayerData player1, PlayerData player2, MainGameSetting mainGameSetting)
@@ -48,7 +50,8 @@ public class MainGameContext
         playerContext_2 = new(player2, 2, PLAYER_MAX_HP);
         currentPlayer = playerContext_1;
         this.mainGameSetting = mainGameSetting;
-        currentTurnDuration = mainGameSetting.turnDuration;
+        CurrentTurnDuration = mainGameSetting.turnDuration;
+        PlayColumn = Random.Range(1, 7);
     }
 
 
@@ -133,6 +136,11 @@ public class MainGameContext
     public int GetPlayerHp(ulong clientId)
     {
         return PlayerContextByClientId[clientId].PlayerCurrentHp;
+    }
+
+    public void RandomPlayColumn()
+    {
+        PlayColumn = Random.Range(1, 7);
     }
 }
 

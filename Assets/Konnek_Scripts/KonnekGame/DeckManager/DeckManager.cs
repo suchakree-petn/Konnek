@@ -65,7 +65,7 @@ public partial class DeckManager : NetworkSingleton<DeckManager>
     }
 
 
-    public void SpawnCard(ulong cardId, ulong reqClientId, uint cardInstanceId,DrawCardAnimation animation)
+    public void SpawnCard(ulong cardId, ulong reqClientId, uint cardInstanceId, DrawCardAnimation animation)
     {
         Transform card = SpawnCardGO(cardId, reqClientId, cardInstanceId, CardState.InHand);
 
@@ -74,7 +74,7 @@ public partial class DeckManager : NetworkSingleton<DeckManager>
             card.GetComponent<CardHolder>().SetCardFaceDown();
         }
 
-        DrawAnimation(card, reqClientId,animation);
+        DrawAnimation(card, reqClientId, animation);
         OnDrawCard?.Invoke();
 
     }
@@ -88,5 +88,17 @@ public partial class DeckManager : NetworkSingleton<DeckManager>
         cardHolder.CardState = cardState;
         cardHolder.OwnerClientId = drawClientId;
         return card_GO;
+    }
+
+    [ContextMenu("Shuffle Deck 1")]
+    public void ShuffleDeck1()
+    {
+        Decks[0].ShuffleDeck();
+    }
+
+    [ContextMenu("Shuffle Deck 2")]
+    public void ShuffleDeck2()
+    {
+        Decks[1].ShuffleDeck();
     }
 }

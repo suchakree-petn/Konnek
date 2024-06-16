@@ -27,7 +27,7 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
         AnimationQueue = new();
 
         if (!IsServer) return;
-        mainGameSetting = Resources.Load<MainGameSetting>("Game Setting/Main Game Setting/SO/Main Game Setting");
+        mainGameSetting = Resources.Load<MainGameSetting>("SO/Game Setting/Main Game Setting");
         MainGameContext = new(PlayerManager.Instance.PlayerData_1, PlayerManager.Instance.PlayerData_2, mainGameSetting);
         CommandQueue = new();
 
@@ -36,32 +36,40 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
         OnStartTurn_Player_1 += (MainGameContext context) =>
         {
             MainGameContext.SetCurrentPlayerContext(1);
-            MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
-            UpdateCurrentPlayerTextClientRpc(context.PlayerContextByPlayerOrder[1].PlayerData.PlayerName.ToString());
-            currentClientTurn.Value = context.PlayerContextByPlayerOrder[1].GetClientId();
+            PlayerContext playerContext = MainGameContext.GetCurrentPlayerContext();
+            playerContext.IsPlayerTurn = true;
+            UpdateCurrentPlayerTextClientRpc(playerContext.PlayerData.PlayerName.ToString());
+            currentClientTurn.Value = playerContext.GetClientId();
 
-            konnekUIManager.StartPlayerTurnAnimation(context);
-            konnekUIManager.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
-            konnekUIManager.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[1].GetClientId());
+            // Set draw card quota when start turn
+            int drawAmount = MainGameContext.DRAW_CARD_QUOTA_AMOUNT + playerContext.BonusDrawCardQuota;
+            playerContext.DrawCardQuota = drawAmount;
+
+            konnekUIManager.SetPlayPieceButton_ServerRpc(true, playerContext.GetClientId());
+            konnekUIManager.SetEndTurnButton_ServerRpc(true, playerContext.GetClientId());
         };
 
         OnStartTurn_Player_2 += (MainGameContext context) =>
         {
             MainGameContext.SetCurrentPlayerContext(2);
-            MainGameContext.GetCurrentPlayerContext().IsPlayerTurn = true;
-            UpdateCurrentPlayerTextClientRpc(context.PlayerContextByPlayerOrder[2].PlayerData.PlayerName.ToString());
-            currentClientTurn.Value = context.PlayerContextByPlayerOrder[2].GetClientId();
+            PlayerContext playerContext = MainGameContext.GetCurrentPlayerContext();
+            playerContext.IsPlayerTurn = true;
+            UpdateCurrentPlayerTextClientRpc(playerContext.PlayerData.PlayerName.ToString());
+            currentClientTurn.Value = playerContext.GetClientId();
 
-            konnekUIManager.StartPlayerTurnAnimation(context);
-            konnekUIManager.SetPlayPieceButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
-            konnekUIManager.SetEndTurnButton_ServerRpc(true, context.PlayerContextByPlayerOrder[2].GetClientId());
+            // Set draw card quota when start turn
+            int drawAmount = MainGameContext.DRAW_CARD_QUOTA_AMOUNT + playerContext.BonusDrawCardQuota;
+            playerContext.DrawCardQuota = drawAmount;
+
+            konnekUIManager.SetPlayPieceButton_ServerRpc(true, playerContext.GetClientId());
+            konnekUIManager.SetEndTurnButton_ServerRpc(true, playerContext.GetClientId());
         };
 
         OnDuringTurn_Player_1 += (MainGameContext context) =>
         {
             if (IsReadyToUpdateTimer())
             {
-                UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
+                UpdateDuringTurnTimerClientRpc((int)context.CurrentTurnDuration);
             }
             DuringTurnTimer(MainGameContext);
         };
@@ -70,7 +78,7 @@ public partial class MainGameManager : NetworkSingleton<MainGameManager>
         {
             if (IsReadyToUpdateTimer())
             {
-                UpdateDuringTurnTimerClientRpc((int)context.currentTurnDuration);
+                UpdateDuringTurnTimerClientRpc((int)context.CurrentTurnDuration);
             }
             DuringTurnTimer(MainGameContext);
         };

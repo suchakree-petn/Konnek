@@ -13,7 +13,7 @@ public class DrawCardAnimation : Command
 
     public override void Execute()
     {
-        uint cardInstanceId = KonnekManager.CardInstanceIdPointer;
+        uint cardInstanceId = CardManager.GetCardInstanceId();
         DeckManager.Instance.SpawnCard(cardId, clientId, cardInstanceId, this);
         OnFinishDrawCard += HandleOnFinishDrawCard;
 

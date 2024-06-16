@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class Deck
 {
     [SerializeField] private List<ulong> cardList = new();
@@ -27,5 +27,15 @@ public class Deck
         ulong card = cardList[^1];
         cardList.RemoveAt(cardList.Count - 1);
         return card;
+    }
+
+    public void ShuffleDeck()
+    {
+        if (!NetworkManager.Singleton.IsServer)
+        {
+            Debug.LogWarning("Client can not shuffle decks");
+            return;
+        }
+        cardList = cardList.OrderBy(x => Random.value).ToList();
     }
 }

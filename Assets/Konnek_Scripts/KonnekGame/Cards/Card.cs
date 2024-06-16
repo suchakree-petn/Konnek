@@ -24,14 +24,14 @@ public abstract class Card : ScriptableObject
         {
             if (_cache == null)
             {
-                Card[] cards = Resources.LoadAll<Card>("KonnekGame/Cards");
+                Card[] cards = Resources.LoadAll<Card>("SO/Cards");
                 _cache = cards.ToDictionary(card => card.cardId, card => card);
             }
             return _cache;
         }
     }
 
-    public abstract void PlayCard();
+    public abstract void PlayCard(ulong clientId);
     public virtual void Discard()
     {
 

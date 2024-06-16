@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Card_MoveRight", menuName = "Card/Action Card/Move Right")]
 public class Card_MoveRight : Card
 {
-    public override void PlayCard()
+    public override void PlayCard(ulong clientId)
     {
         int selectedColumn = KonnekManager.Instance.SelectedColumn;
         if (selectedColumn == 7)

@@ -30,7 +30,7 @@ public partial class CardHolder : MonoBehaviour
 
     private void HandleOnPlayCardSuccess()
     {
-        KonnekManager.Instance.PlayCard_ServerRpc(Card.cardId);
+        KonnekManager.Instance.PlayCard_ServerRpc(Card.cardId, OwnerClientId);
         KonnekManager.Instance.DestroyCard_ServerRpc(InstanceId);
     }
 

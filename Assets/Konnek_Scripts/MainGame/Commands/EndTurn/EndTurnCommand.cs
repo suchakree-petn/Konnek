@@ -14,15 +14,8 @@ public class EndTurnCommand : Command
         MainGameContext mainGameContext = mainGameManager.MainGameContext;
         PlayerContext playerContext = mainGameContext.PlayerContextByPlayerOrder[currentPlayerIndex];
 
-        // check is player play piece if not then play it
-        if (!playerContext.IsPlayedPiece)
-        {
-            KonnekUIManager.Instance.PlayButton(playerContext.GetClientId());
-        }
-        playerContext.IsPlayedPiece = false;
-
         // set timer and current game state to "Player [?] end turn"
-        mainGameContext.currentTurnDuration = mainGameContext.TurnDuration;
+        mainGameContext.CurrentTurnDuration = mainGameContext.TurnDuration;
         MainGameState endTurn = currentPlayerIndex == 1 ? MainGameState.Player_1_End_Turn : MainGameState.Player_2_End_Turn;
         mainGameManager.SetCurrentGameState(endTurn);
 
@@ -31,17 +24,23 @@ public class EndTurnCommand : Command
         CommandQueue animationQueue = mainGameManager.AnimationQueue;
         int commandsQueueCount = commandsQueue.commandsQueue.Count;
         int animationQueueCount = animationQueue.commandsQueue.Count;
+        MainGameState startTurn = currentPlayerIndex == 1 ? MainGameState.Player_2_Start_Turn : MainGameState.Player_1_Start_Turn;
+
         if (commandsQueueCount > 0 || animationQueueCount > 0)
         {
             mainGameManager.SetCurrentGameState(MainGameState.Idle);
 
-            MainGameState startTurn = currentPlayerIndex == 1 ? MainGameState.Player_2_Start_Turn : MainGameState.Player_1_Start_Turn;
 
             CommandQueue _commandQueue = commandsQueueCount > animationQueueCount ? commandsQueue : animationQueue;
             _commandQueue.GetLastCommand().OnComplete(() => mainGameManager.SetCurrentGameState(startTurn));
 
             playerContext.IsPlayerTurn = false;
         }
+        else
+        {
+            mainGameManager.SetCurrentGameState(startTurn);
+        }
+
         base.Execute();
     }
 

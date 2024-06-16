@@ -17,12 +17,12 @@ public partial class MainGameManager
     public void DuringTurnTimer(MainGameContext context)
     {
         MainGameState mainGameState = GetCurrentGameState();
-        if (context.currentTurnDuration > 0
+        if (context.CurrentTurnDuration > 0
         && (mainGameState == MainGameState.Player_1_During_Turn || mainGameState == MainGameState.Player_2_During_Turn))
         {
             if (AnimationQueue.CurrentExecutingCommand != StartTurnAnimation.START_TURN_ANIMATION_NAME)
             {
-                context.currentTurnDuration -= Time.deltaTime;
+                context.CurrentTurnDuration -= Time.deltaTime;
             }
         }
         else

@@ -206,16 +206,6 @@ namespace Konnek.KonnekLobby
                 Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, MAX_PLAYER, options);
 
                 joinedLobby = lobby;
-
-                Debug.Log("PlayerCount: " + joinedLobby.Players.Count);
-
-                Debug.Log("Stage ID: " + joinedLobby.Data[KEY_STAGE_ID].Value);
-
-                foreach (Player player in joinedLobby.Players)
-                {
-                    Debug.Log("Player name: " + player.Data[KEY_PLAYER_NAME].Value);
-                }
-
                 NetworkManager.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
 
 
@@ -646,7 +636,6 @@ namespace Konnek.KonnekLobby
         [ServerRpc(RequireOwnership = false)]
         public void SetPlayerLobby_ServerRpc(int index, PlayerLobby playerLobby)
         {
-            Debug.Log("Set player lobby: " + playerLobby.PlayerName + " to " + playerLobby.IsReady);
             joinedPlayerLobby[index] = playerLobby;
         }
         // private void OnJoinedPlayerLobbyChanged(NetworkListEvent<PlayerLobby> changeEvent)

@@ -15,6 +15,10 @@ public partial class DeckManager
     public void DrawCardFromTopDeckServerRpc(ulong clientId, int amount = 1)
     {
         Deck deck = DeckDict[clientId];
+        MainGameManager mainGameManager = MainGameManager.Instance;
+        PlayerContext playerContext = mainGameManager.MainGameContext.PlayerContextByClientId[clientId];
+        playerContext.DrawCardQuota -= amount;
+
         List<ulong> cardIds = new();
         for (int i = 0; i < amount; i++)
         {
@@ -29,7 +33,7 @@ public partial class DeckManager
             DrawCardAnimation_ClientRpc(clientId, cardId);
 
             Command command = new DrawCardCommand(clientId, cardId);
-            MainGameManager.Instance.AddCommand(command);
+            mainGameManager.AddCommand(command);
         }
     }
 

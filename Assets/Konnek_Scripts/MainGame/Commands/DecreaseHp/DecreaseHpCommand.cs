@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class DecreaseHpCommand : Command
 {
@@ -14,13 +15,16 @@ public class DecreaseHpCommand : Command
     public override void Execute()
     {
         MainGameContext mainGameContext = MainGameManager.Instance.MainGameContext;
-        int currentHp = mainGameContext.GetPlayerHp(clientId);
-        currentHp -= amount;
+        int from = mainGameContext.GetPlayerHp(clientId);
+        int currentHp = from - amount;
         if (currentHp < 0)
         {
             currentHp = 0;
         }
+
         mainGameContext.SetPlayerHp(clientId, currentHp);
+        KonnekUIManager.Instance.HpDecreasedAnimation_ClientRpc(clientId, from, currentHp);
+
         base.Execute();
 
     }

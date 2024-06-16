@@ -1,0 +1,13 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "", menuName = "Card/")]
+public class #SCRIPTNAME# : Card
+{
+    public override void PlayCard()
+    {
+    #NOTRIM#
+        OnFinishPlayCard?.Invoke();
+    }
+}

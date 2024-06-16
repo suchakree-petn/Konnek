@@ -6,6 +6,7 @@ public class GenerateBoard : MonoBehaviour
 {
     [SerializeField] private GameObject square;
     [SerializeField] private Transform slots_parent;
+    
     [ContextMenu("Generate Board")]
     private void Generate()
     {
